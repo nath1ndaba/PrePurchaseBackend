@@ -1,0 +1,10 @@
+build:
+  docker:
+    release:
+      dockerfile: ./Dockerfile.backend
+      target: build
+    web: ./Dockerfile.backend
+
+  config:
+    NETCORESDK_VERSION: "6.0"
+    ASPNETCORE_VERSION: 6.0-bullseye-slim

@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+  html-to-pdf:
+    build:
+      dockerfile: ./Dockerfile.dev
+
+    image: html-to-pdf:${TAG}
+
+  stella-web:
+    build:
+      args:
+        - NETCORESDK_VERSION=${NETCORESDK_VERSION}
+        - ASPNETCORE_VERSION=${ASPNETCORE_VERSION}
+
+    image: stella-web:${TAG}
+    env_file: ./Stella/.env

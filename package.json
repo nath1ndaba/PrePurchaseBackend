@@ -1,0 +1,39 @@
+{
+  "name": "stella-web",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "build_versions": {
+    "prod": "1.0.3",
+    "dev": "1.0.0",
+    "preview": "1.0.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "preview-cache": "node index.js --build preview --port 8000 --use-cache",
+    "preview": "node index.js --build preview --port 8000",
+    "dev-cache": "node index.js --build dev --port 8001 --use-cache",
+    "dev": "node index.js --build dev --port 8001",
+    "prod-cache": "node index.js --build prod --port 8002 --use-cache",
+    "prod": "node index.js --build prod --port 8002",
+    "push-heroku-app-pre": "node index.js --build preview --app --tag dev-stella-web",
+    "push-heroku-app-prod": "node index.js --build prod --app --tag stella-web",
+    "start": "node index.js up"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nath1ndaba/PrePurchase.git"
+  },
+  "keywords": [],
+  "author": "Pascal Benstrong",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nath1ndaba/PrePurchase/issues"
+  },
+  "homepage": "https://github.com/nath1ndaba/PrePurchase#readme",
+  "dependencies": {
+    "bootstrap": "^5.0.0-beta3",
+    "colors": "^1.4.0",
+    "yargs": "^16.0.3"
+  }
+}

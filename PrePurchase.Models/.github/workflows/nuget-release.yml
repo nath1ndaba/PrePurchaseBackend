@@ -1,0 +1,88 @@
+name: Release to Nuget
+
+on:
+  push:
+    tags:
+      - "v*"
+
+env:
+  TAG_NAME: ${{ github.event.release.tag_name }}
+  PROJECT_PATH: ./
+  ARTIFACT_NAME: ST.Models
+  PACKAGE_RELEASE_NOTES_URL: https://github.com/${{ github.repository }}/releases/tag/
+  PACKAGE_OUTPUT_DIRECTORY: ${{ github.workspace }}/output
+  GITHUB_REPO_URL: https://github.com/${{ github.repository }}
+  GITHUB_SOURCE_URL: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
+  DOT_NET_VERSION: 6.*
+  DRAFT: false
+  PRERELEASE: false
+
+permissions:
+  packages: write
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ env.DOT_NET_VERSION }}
+
+      - name: Run Restore
+        run: dotnet restore
+
+      - name: Build Project
+        run: dotnet build ${{ env.PROJECT_PATH }} -c Release --no-restore
+
+      - name: Get Version
+        id: version
+        uses: battila7/get-version-action@v2
+
+      - name: Create Nuget Package
+        env:
+          Command: pack ${{ env.PROJECT_PATH }} -c Release --no-restore --include-symbols --output ${{ env.PACKAGE_OUTPUT_DIRECTORY }}
+          AssemblyVersion: ${{ steps.version.outputs.major }}.${{ steps.version.outputs.minor }}.${{ steps.version.outputs.patch }}
+          FileVersion: ${{ steps.version.outputs.version-without-v }}
+          PackageReleaseNotes: "See ${{ env.PACKAGE_RELEASE_NOTES_URL }}${{ steps.version.outputs.version }}"
+          RepositoryUrl: "${{ env.GITHUB_REPO_URL }}"
+
+        run: dotnet ${{ env.Command }} -p:AssemblyVersion=${{ env.AssemblyVersion }} -p:Version=${{ env.FileVersion }} -p:FileVersion=${{ env.FileVersion }} -p:PackageReleaseNotes="${{ env.PackageReleaseNotes }}" -p:RepositoryUrl="${{ env.RepositoryUrl }}"
+
+      - name: Push Package to GitHub
+        run: dotnet nuget push ${{ env.PACKAGE_OUTPUT_DIRECTORY }}/*.nupkg --skip-duplicate -k ${{ secrets.GITHUB_TOKEN }} -s ${{ env.GITHUB_SOURCE_URL }}
+
+      - name: Archive Nuget Package
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.ARTIFACT_NAME }}.${{ steps.version.outputs.version-without-v }}.nupkg
+          path: "${{ env.PACKAGE_OUTPUT_DIRECTORY }}/*.nupkg"
+
+      - name: Zip Archive
+        run: |
+          zip --junk-paths ${{ env.ARTIFACT_NAME }}.${{ steps.version.outputs.version-without-v }}.zip ${{ env.PACKAGE_OUTPUT_DIRECTORY }}/*.nupkg
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: ${{ env.DRAFT }}
+          prerelease: ${{ env.PRERELEASE }}
+
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          asset_path: ./${{ env.ARTIFACT_NAME }}.${{ steps.version.outputs.version-without-v }}.zip
+          asset_name: ${{ env.ARTIFACT_NAME }}.${{ steps.version.outputs.version-without-v }}.nupkg.zip
+          asset_content_type: application/zip

@@ -1,0 +1,312 @@
+@page "/"
+@inject ISnackbar Snackbar
+@inject IIMSDataAcess imsDataAcess
+
+<PageTitle>Excel </PageTitle>
+
+
+<MudContainer>
+    <MudFileUpload T="IBrowserFile" FilesChanged="UploadData" Accept=".xlsx" Class="px-2 my-3">
+        <ButtonTemplate>
+            <MudButton HtmlTag="label"
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       StartIcon="@Icons.Material.Filled.AttachFile"
+                       for="@context">
+                Import Data
+            </MudButton>
+        </ButtonTemplate>
+    </MudFileUpload>
+
+    <MudDataGrid T="DataTransferDto" MultiSelection="true" Items="@ImportedDataFromDB" SortMode="SortMode.Multiple" Filterable="true" QuickFilter="@_quickFilter"
+                 Hideable="true" RowClick="@RowClicked" SelectedItemsChanged="@SelectedItemsChanged">
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">Staff Members</MudText>
+            <MudSpacer />
+            <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true"
+                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+        </ToolBarContent>
+        <Columns>
+            <SelectColumn T="DataTransferDto" />
+            <Column T="DataTransferDto" Field="A" Title="Name" Sortable="false" Filterable="false" />
+            <Column T="DataTransferDto" Field="B" />
+            <Column T="DataTransferDto" Field="C" SortBy="@_sortBy" Title="CELL C" />
+            <Column T="DataTransferDto" Field="D" />
+            <Column T="DataTransferDto" Field="E" Title="CELL E" />
+            <Column T="DataTransferDto" Field="F" Title="CELL F" />
+        </Columns>
+        <PagerContent>
+            <MudDataGridPager T="DataTransferDto" />
+        </PagerContent>
+    </MudDataGrid>
+
+</MudContainer>
+
+
+@code
+{
+    [Parameter]
+    public IIMSDataAcess imsDataAcesses
+    {
+        get
+        {
+            IIMSDataAcess imsDataAcess = new IMSDataAcess(/*to give it proper data*/);
+            return imsDataAcess;
+        }
+        set
+        {
+        }
+    }
+
+    public List<DataTransferDto>? ImportedDataFromDB { get; set; }
+
+    private List<DataTransferDto>? DataTransferListImport = new List<DataTransferDto>();
+    //protected override async Task OnInitializedAsync()
+    //{
+    //    DataTransferListImport = new List<DataTransferDto>();
+    //}
+
+    private async void UploadData(IBrowserFile file)
+    {
+        var fileSize = file.Size;
+        if (fileSize >= 521000)
+        {
+
+            //string ErrorMessage = "File size too large";
+        }
+        else
+        {
+            using (MemoryStream ms = new MemoryStream())
+            {
+
+                Stream stream = file.OpenReadStream();
+                await stream.CopyToAsync(ms);
+
+                //Log.Logger.Information("upload data started");
+
+
+                using (XLWorkbook workBook = new XLWorkbook(ms))
+                {
+                    //Read the first Sheet from Excel file.
+                    IXLWorksheet workSheet = workBook.Worksheet(1);
+
+                    //Loop through the Worksheet rows.
+                    bool firstRow = true;
+                    foreach (IXLRow row in workSheet.Rows())
+                    {
+                        DataTransferDto data = new DataTransferDto();
+                        //Use the first row to add columns to DataTable.
+                        if (firstRow)
+                        {
+                            List<string> templateTest = new List<string> { "dataId", "Name", "Surname", "Known As", "DateOfBirth", "IDNumber", "CellNumber", "DateOfEmployment", "Department", "Position", "Email", "TaxNumber", "BankName", "AccountHolder", "AccountNumber", "AccountType", "Branch", "BranchCode", "Street", "Surburb", "City", "Province", "PostalCode" };
+                            int increment = 0;
+                            foreach (IXLCell cell in row.Cells())
+                            {
+                                if (templateTest[increment].ToLower().Trim() != cell?.Value.ToString()?.ToLower().Trim())
+                                {
+                                    Snackbar.Add($"invalid template used, column {cell?.Value} unknown", Severity.Error);
+                                    Log.Logger.Information($"invalid template used, column {cell?.Value} unknown");
+                                    return;
+                                }
+                                increment++;
+                            }
+                            firstRow = false;
+                        }
+                        else
+                        {
+                            foreach (IXLCell cell in row.Cells())
+                            {
+                                if (cell.CachedValue.ToString() != "")
+                                {
+                                    switch (cell.Address.ColumnLetter)
+                                    {
+                                        case "A":
+                                            data.A = cell.Value.ToString() ?? string.Empty;
+                                            Log.Logger.Information("data in column {data} added", data.A);
+                                            break;
+                                        case "B":
+                                            data.B = cell.Value.ToString() ?? string.Empty;
+                                            Log.Logger.Information("data in column {data} added", data.B);
+                                            break;
+                                        case "C":
+                                            data.C = cell.Value.ToString() ?? string.Empty;
+                                            Log.Logger.Information("data in column{data} added", data.C);
+                                            break;
+                                        case "D":
+                                            data.D = cell.Value.ToString() ?? string.Empty;
+                                            Log.Logger.Information("data in column {data} added", data.D);
+                                            break;
+                                        case "E":
+                                            data.E = DateTime.Parse(cell.Value.ToString()!);
+                                            Log.Logger.Information("data in column {data} added", data.E);
+                                            break;
+                                        case "F":
+                                            data.F = cell.Value.ToString() ?? string.Empty;
+                                            Log.Logger.Information("data in column {data} added", data.F);
+                                            break;
+                                        case "G":
+                                            data.G = cell.Value.ToString() ?? string.Empty;
+                                            Log.Logger.Information("data in column {data} added", data.G);
+                                            break;
+                                        case "H":
+                                            data.H = DateTime.Parse(cell.Value.ToString()!);
+                                            Log.Logger.Information("data in column {data} added", data.H);
+                                            break;
+                                        case "I":
+                                            data.I = cell.Value.ToString() ?? string.Empty;
+                                            Log.Logger.Information("data in column {data} added", data.I);
+                                            break;
+                                        case "J":
+                                            data.J = cell.Value.ToString() ?? string.Empty;
+                                            Log.Logger.Information("data in column {data} added", data.I);
+                                            break;
+                                        case "K":
+                                            data.K = cell.Value.ToString() ?? string.Empty;
+                                            Log.Logger.Information("data in column {data} added", data.J);
+                                            break;
+                                        case "L":
+                                            data.L = cell.Value.ToString() ?? string.Empty;
+                                            Log.Logger.Information("data in column {data} added", data.K);
+                                            break;
+                                        case "M":
+                                            data.M = cell.Value.ToString();
+                                            Log.Logger.Information("data in column {data} added", data.M);
+                                            break;
+                                        case "N":
+                                            data.N = cell.Value.ToString();
+                                            Log.Logger.Information("data in column {data} added", data.N);
+                                            break;
+                                        case "O":
+                                            bool isValidLong = long.TryParse(cell.Value.ToString(), out long o);
+                                            if (isValidLong) data.O = o;
+                                            else data.O = 3115;
+                                            Log.Logger.Information("data in column {data} added", data.O);
+
+                                            break;
+                                        case "P":
+                                            data.P = cell.Value.ToString();
+                                            Log.Logger.Information("data in column {data} added", data.P);
+                                            break;
+                                        case "Q":
+                                            data.Q = cell.Value.ToString();
+                                            Log.Logger.Information("data in column {data} added", data.Q);
+                                            break;
+                                        case "R":
+                                            bool isValidInt = Int32.TryParse(cell.Value.ToString(), out int r);
+                                            if (isValidInt) data.R = r;
+                                            else data.R = 3115;
+                                            Log.Logger.Information("data in column {data} added", data.R);
+                                            break;
+                                        case "S":
+                                            data.S = cell.Value.ToString();
+                                            Log.Logger.Information("data in column {data} added", data.S);
+                                            break;
+                                        case "T":
+                                            data.T = cell.Value.ToString();
+                                            Log.Logger.Information("data in column {data} added", data.T);
+                                            break;
+                                        case "U":
+                                            data.U = cell.Value.ToString();
+                                            Log.Logger.Information("data in column {data} added", data.U);
+                                            break;
+                                        case "V":
+                                            data.V = cell.Value.ToString();
+                                            Log.Logger.Information("data in column {data} added", data.V);
+                                            break;
+                                        case "W":
+                                            data.W = cell.Value.ToString();
+                                            Log.Logger.Information("data in column {data} added", data.W);
+                                            break;
+                                        default:
+                                            Log.Logger.Information("Something has gone wrong ");
+                                            break;
+                                    }
+                                }
+                            }
+                            if (data is not null) DataTransferListImport?.Add(data);
+
+                        }
+                    }
+
+                    PostData(DataTransferListImport!);
+                }
+            }
+
+
+        }
+    }
+
+
+    private async void PostData(List<DataTransferDto> ImportedDataFromDBList)
+    {
+        //string accessToken = await ((AuthState)AuthState).GetToken();
+        //string companyId = await ((AuthState)AuthState).GetCompanyId();
+        //var response = await ApiService.ImportImportedDataFromDB(accessToken, ImportedDataFromDBList, companyId);
+
+        //if (response.IsSuccessStatusCode)
+        //{
+        //    Snackbar.Add("ImportedDataFromDB imported Sucessfully", Severity.Success);
+        //    await InvokeAsync(() =>
+        //    {
+        //        this.ImportedDataFromDB?.Clear();
+        //        this.ImportedDataFromDB?.AddRange(response.Content?.Data!);
+        //        StateHasChanged();
+        //    });
+        //}
+        //else
+        //{
+        //    Response? _data = response.Error.Content?.ToResponse();
+        //    ErrorMessage = _data!.Error;
+        //    Snackbar.Add($"{_data?.Error}", Severity.Error);
+        //}
+        DataTransferListImport?.Clear();
+    }
+
+
+    private string _searchString = string.Empty;
+    private bool _sortNameByLength;
+    private List<string> _events = new();
+    // custom sort by name length
+    private Func<DataTransferDto, object> _sortBy => x =>
+    {
+        if (_sortNameByLength)
+            return x.A!.Length;
+        else
+            return x.A!;
+    };
+    // quick filter - filter gobally across multiple columns with the same input
+    private Func<DataTransferDto, bool> _quickFilter => x =>
+    {
+        if (string.IsNullOrWhiteSpace(_searchString))
+            return true;
+
+        if (x.B!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        if (x.A!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        if ($"{x.C} {x.D} {x.E}".Contains(_searchString))
+            return true;
+
+        return false;
+    };
+
+
+    // events
+    void RowClicked(DataGridRowClickEventArgs<DataTransferDto> args)
+    {
+        //UpdateDialog(args.Item);
+        //_events.Insert(0, $"Event = RowClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
+    }
+
+    void SelectedItemsChanged(HashSet<DataTransferDto> items)
+    {
+        _events.Insert(0, $"Event = SelectedItemsChanged, Data = {System.Text.Json.JsonSerializer.Serialize(items)}");
+    }
+
+
+}
+
+
+

@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<LangVersion>latest</LangVersion>
+		<AssemblyVersion>2023.11.22.01</AssemblyVersion>
+		<FileVersion>2021.1225.37.0</FileVersion>
+		<RootNamespace>PrePurchase.Models</RootNamespace>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<Product>PrePurchase.Models</Product>
+		<RepositoryUrl>https://github.com/nath1ndaba/PrePurchase.Models</RepositoryUrl>
+		<PackageProjectUrl>https://github.com/Pre-Purchase/BM-IMS-Database-Library</PackageProjectUrl>
+		<Version>1.0.0</Version>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.2.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
+		<PackageReference Include="MongoDB.Bson" Version="2.15.1" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+		<PackageReference Include="System.Text.Json" Version="6.0.3" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="dll\" />
+	</ItemGroup>
+
+</Project>

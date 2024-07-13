@@ -1,0 +1,39 @@
+#See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
+ARG ASPNETCORE_VERSION
+ARG NETCORESDK_VERSION
+
+ARG GITHUB_USER
+ARG GITHUB_PAT
+
+FROM mcr.microsoft.com/dotnet/aspnet:$ASPNETCORE_VERSION AS runtime
+
+FROM mcr.microsoft.com/dotnet/sdk:$NETCORESDK_VERSION AS build
+WORKDIR /src
+
+COPY /StellaTimesBackend.sln ./
+COPY /BackendServer ./BackendServer
+COPY /BackendServices ./BackendServices
+COPY /Infrastructure ./Infrastructure
+
+ARG GITHUB_USER
+ARG GITHUB_PAT
+# --store-password-in-clear-text is required, encryption not supported on non-windows
+RUN dotnet nuget add source https://nuget.pkg.github.com/nath1ndaba/index.json -n github -u $GITHUB_USER -p $GITHUB_PAT \
+    --store-password-in-clear-text \
+#restore packages and publish
+    & dotnet restore \
+    & dotnet publish ./BackendServer/BackendServer.csproj -c Release -o /publish
+    
+#create a production image from the published files
+FROM runtime AS final
+WORKDIR /app
+COPY --from=build /publish .
+
+EXPOSE 80
+
+#disable for pushing to heroku 
+#ENTRYPOINT ["dotnet", "Stella.dll"]
+
+#RUN ["docker run", "-d", "--network=host"]
+#enable for pushing to heroku
+CMD ASPNETCORE_URLS=http://*:$PORT dotnet BackendServer.dll
