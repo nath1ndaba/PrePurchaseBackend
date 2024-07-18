@@ -1,5 +1,8 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using PrePurchase.Models.Converters;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace PrePurchase.Models
 {
@@ -7,6 +10,11 @@ namespace PrePurchase.Models
     [BsonIgnoreExtraElements]
     public record Address
     {
+        [JsonConverter(typeof(ObjectIdConverter))]
+        [BsonId]
+        [BsonRequired]
+        public ObjectId Id { get; set; } = ObjectId.GenerateNewId();
+        public string UserId { get; set; }
         public string Street { get; set; }
         public string City { get; set; }
         public string Suburb { get; set; }

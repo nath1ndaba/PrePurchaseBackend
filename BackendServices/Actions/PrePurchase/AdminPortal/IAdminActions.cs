@@ -6,7 +6,8 @@ namespace BackendServices.Actions.PrePurchase.AdminPortal
 {
     public interface IAdminActions
     {
-        Task<Response> Register(AdminRegisterModel model, ObjectId createdBy);
+        Task<Response> RegisterAdmin(AdminRegisterModel model, ObjectId createdBy);
+        Task<Response> UpdateAdmin(AdminRegisterModel model, ObjectId createdBy);
         Task<Response> GetAdmin(string adminId);
         Task<Response> GetAdmins();
         Task<Response> ArchiveAdmin(string adminId, string updatedBy);

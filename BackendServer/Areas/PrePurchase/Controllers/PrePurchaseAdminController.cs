@@ -27,7 +27,7 @@ namespace BackendServer.V1.Controllers
         public async Task<Response> Register([FromBody] AdminRegisterModel model)
         {
             Response response =
-                await _registerAdminActions.Register(model,
+                await _registerAdminActions.RegisterAdmin(model,
                     ObjectId.GenerateNewId()); //id not necessary at this stage/for now
 
             return response;
@@ -47,7 +47,7 @@ namespace BackendServer.V1.Controllers
         [HttpGet("getadmin/{adminId}")]
         [AllowAnonymous]
         [ProducesResponseType(typeof(Response<JwtTokenModel>), 200)]
-        public async Task<Response> GetAdmins([FromQuery] string adminId)
+        public async Task<Response> GetAdmins([FromRoute] string adminId)
         {
             Response response =
                 await _registerAdminActions.GetAdmin(adminId);
@@ -58,20 +58,18 @@ namespace BackendServer.V1.Controllers
         [HttpPatch("archiveadmin/{adminId}")]
         [AllowAnonymous]
         [ProducesResponseType(typeof(Response<JwtTokenModel>), 200)]
-        public async Task<Response> ArchiveAdmin([FromQuery] string adminId)
+        public async Task<Response> ArchiveAdmin([FromRoute] string adminId)
         {
             string updatedBy = User.FindFirstValue(ClaimTypes.Name);
 
-            Response response =
-                await _registerAdminActions.ArchiveAdmin(adminId, updatedBy);
-
+            Response response = await _registerAdminActions.ArchiveAdmin(adminId, updatedBy);
             return response;
         }
 
         [HttpPatch("restoreadmin/{adminId}")]
         [AllowAnonymous]
         [ProducesResponseType(typeof(Response<JwtTokenModel>), 200)]
-        public async Task<Response> RestoreAdmin([FromQuery] string adminId)
+        public async Task<Response> RestoreAdmin([FromRoute] string adminId)
         {
             string updatedBy = User.FindFirstValue(ClaimTypes.Name);
 
