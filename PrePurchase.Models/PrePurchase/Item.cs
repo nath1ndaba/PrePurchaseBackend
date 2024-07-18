@@ -31,6 +31,7 @@ public class Item
     [Required]
     public decimal Price { get; set; }
 
-    public ICollection<PrePurchase> PrePurchases { get; set; }
-    public ICollection<Collection> Collections { get; set; }
+    [Required]
+    public bool CanBeSoldInPieces { get; set; }
+
 }

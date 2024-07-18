@@ -20,6 +20,7 @@ public class Collection
     public DateTime UpdatedDate { get; set; }
     [JsonConverter(typeof(ObjectIdConverter))]
     public ObjectId? UpdatedBy { get; set; }
+
     public bool? DeletedIndicator { get; set; }
 
     [Required]
@@ -31,15 +32,12 @@ public class Collection
     [Required]
     public bool IsFullItem { get; set; }
 
-    public int ResidentId { get; set; }
-    [ForeignKey("ResidentId")]
-    public Resident Resident { get; set; }
+    [JsonConverter(typeof(ObjectIdConverter))]
+    public ObjectId? ResidentId { get; set; }
 
-    public int SpazaShopOwnerId { get; set; }
-    [ForeignKey("SpazaShopOwnerId")]
-    public ShopOwner SpazaShopOwner { get; set; }
+    [JsonConverter(typeof(ObjectIdConverter))]
+    public ObjectId? ShopId { get; set; }
 
-    public int ItemId { get; set; }
-    [ForeignKey("ItemId")]
-    public Item Item { get; set; }
+    [JsonConverter(typeof(ObjectIdConverter))]
+    public ObjectId? ItemId { get; set; }
 }
