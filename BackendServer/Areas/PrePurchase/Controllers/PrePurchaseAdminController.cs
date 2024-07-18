@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Threading.Tasks;
 using BackendServices;
 using BackendServices.Actions.PrePurchase.AdminPortal;
@@ -32,7 +33,55 @@ namespace BackendServer.V1.Controllers
             return response;
         }
 
-        public PrePurchaseAdminController(IRegisterAdminActions registerAdminActions,
+        [HttpGet("getadmins")]
+        [AllowAnonymous]
+        [ProducesResponseType(typeof(Response<JwtTokenModel>), 200)]
+        public async Task<Response> GetAdmins()
+        {
+            Response response =
+                await _registerAdminActions.GetAdmins();
+
+            return response;
+        }
+
+        [HttpGet("getadmin/{adminId}")]
+        [AllowAnonymous]
+        [ProducesResponseType(typeof(Response<JwtTokenModel>), 200)]
+        public async Task<Response> GetAdmins([FromQuery] string adminId)
+        {
+            Response response =
+                await _registerAdminActions.GetAdmin(adminId);
+
+            return response;
+        }
+
+        [HttpPatch("archiveadmin/{adminId}")]
+        [AllowAnonymous]
+        [ProducesResponseType(typeof(Response<JwtTokenModel>), 200)]
+        public async Task<Response> ArchiveAdmin([FromQuery] string adminId)
+        {
+            string updatedBy = User.FindFirstValue(ClaimTypes.Name);
+
+            Response response =
+                await _registerAdminActions.ArchiveAdmin(adminId, updatedBy);
+
+            return response;
+        }
+
+        [HttpPatch("restoreadmin/{adminId}")]
+        [AllowAnonymous]
+        [ProducesResponseType(typeof(Response<JwtTokenModel>), 200)]
+        public async Task<Response> RestoreAdmin([FromQuery] string adminId)
+        {
+            string updatedBy = User.FindFirstValue(ClaimTypes.Name);
+
+            Response response =
+                await _registerAdminActions.ArchiveAdmin(adminId, updatedBy);
+
+            return response;
+        }
+
+        public PrePurchaseAdminController(IAdminActions registerAdminActions,
             IAuthContainerModel containerModel,
             IAuthService authService, IRepository<RefreshToken> refreshTokens) : base(containerModel, authService,
             refreshTokens)
@@ -40,6 +89,6 @@ namespace BackendServer.V1.Controllers
             _registerAdminActions = registerAdminActions;
         }
 
-        private readonly IRegisterAdminActions _registerAdminActions;
+        private readonly IAdminActions _registerAdminActions;
     }
 }

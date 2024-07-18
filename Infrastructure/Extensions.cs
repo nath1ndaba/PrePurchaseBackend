@@ -145,7 +145,7 @@ namespace Infrastructure
             services.AddScoped<ISuppliersActions, SuppliersActions>();
 
             //Pre -Purchase
-            services.AddScoped<IRegisterAdminActions, RegisterAdminActions>();
+            services.AddScoped<IAdminActions, AdminActions>();
 
             return services;
         }
