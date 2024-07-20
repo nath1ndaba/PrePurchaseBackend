@@ -54,7 +54,7 @@ namespace Infrastructure.Actions.PrePurchase
 
             var hash = await _passwordManager.Hash(model.Password);
             model.Password = hash;
-
+            model.Id = ObjectId.GenerateNewId().ToString();
             model.CreatedBy = createdBy;
             model.UpdatedBy = createdBy;
             model.CreatedDate = DateTime.UtcNow;
@@ -62,6 +62,7 @@ namespace Infrastructure.Actions.PrePurchase
             model.DeletedIndicator = false;
 
             User newUser = new();
+            newUser.ShopId = new List<ObjectId>();
             newUser.DtoToUser(model);
 
             await _user.Insert(newUser);

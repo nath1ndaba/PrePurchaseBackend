@@ -16,12 +16,12 @@ public class Collection
     public ObjectId Id { get; set; } = ObjectId.GenerateNewId();
     public DateTime CreatedDate { get; set; }
     [JsonConverter(typeof(ObjectIdConverter))]
-    public ObjectId? CreatedBy { get; set; }
+    public ObjectId CreatedBy { get; set; }
     public DateTime UpdatedDate { get; set; }
     [JsonConverter(typeof(ObjectIdConverter))]
-    public ObjectId? UpdatedBy { get; set; }
+    public ObjectId UpdatedBy { get; set; }
 
-    public bool? DeletedIndicator { get; set; }
+    public bool DeletedIndicator { get; set; }
 
     [Required]
     public DateTime CollectionDate { get; set; }

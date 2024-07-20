@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using PrePurchase.Models;
 using PrePurchase.Models.PrePurchase;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -89,14 +90,15 @@ namespace Infrastructure.Actions.PrePurchase
             _logger.LogInformation("User successfully authenticated with email: {Email}", email);
 
             var userInfo = new UserDto();
+            userInfo.ShopId = new List<string>();
             userInfo.DtoFromUser(user);
             userInfo.Address = await _address.FindOne(x => x.AddressBelongsToId == user.Id) ?? new Address();
 
             var loginResponse = new UserLoginResponse
             {
                 User = userInfo,
+                Shop = new List<ShopDto>()
             };
-
             if (user.Role != UserRole.Resident)
             {
                 // Fetch all shops related to the user in a single query

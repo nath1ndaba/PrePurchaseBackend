@@ -14,6 +14,7 @@ namespace PrePurchase.Models
         [BsonId]
         [BsonRequired]
         public ObjectId Id { get; set; } = ObjectId.GenerateNewId();
+        [JsonConverter(typeof(ObjectIdConverter))]
         public ObjectId AddressBelongsToId { get; set; }
         public string Street { get; set; }
         public string City { get; set; }

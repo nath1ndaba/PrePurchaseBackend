@@ -18,14 +18,14 @@ public class Admin
     public DateTime CreatedDate { get; set; }
 
     [JsonConverter(typeof(ObjectIdConverter))]
-    public ObjectId? CreatedBy { get; set; }
+    public ObjectId CreatedBy { get; set; }
 
     public DateTime UpdatedDate { get; set; }
 
     [JsonConverter(typeof(ObjectIdConverter))]
-    public ObjectId? UpdatedBy { get; set; }
+    public ObjectId UpdatedBy { get; set; }
 
-    public bool? DeletedIndicator { get; set; }
+    public bool DeletedIndicator { get; set; }
     [Required] public string Name { get; set; }
     [Required] public string Surname { get; set; }
 

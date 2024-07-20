@@ -18,14 +18,14 @@ public class Item
     public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
 
     [JsonConverter(typeof(ObjectIdConverter))]
-    public ObjectId? CreatedBy { get; set; }
+    public ObjectId CreatedBy { get; set; }
 
     public DateTime UpdatedDate { get; set; } = DateTime.UtcNow;
 
     [JsonConverter(typeof(ObjectIdConverter))]
-    public ObjectId? UpdatedBy { get; set; }
+    public ObjectId UpdatedBy { get; set; }
 
-    public bool? DeletedIndicator { get; set; }
+    public bool DeletedIndicator { get; set; }
 
     [Required]
     [StringLength(100, MinimumLength = 1)]
