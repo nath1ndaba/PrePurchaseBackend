@@ -6,6 +6,7 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using PrePurchase.Models;
 using PrePurchase.Models.Inventory;
+using PrePurchase.Models.PrePurchase;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,10 +30,10 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Company company = await _common.ValidateCompany(role, companyId);
-                IEnumerable<StockCount> stockCounts = await _stockCountRepository.Find(u => u.CompanyId == company.Id);
+                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
+                IEnumerable<StockCount> stockCounts = await _stockCountRepository.Find(u => u.ShopId == shop.Id);
                 if (stockCounts == null || !stockCounts.Any())
-                    throw new HttpResponseException($"No stockCounts found for {company.CompanyName}");
+                    throw new HttpResponseException($"No stockCounts found for {shop.Name}");
                 return new Response<IEnumerable<StockCount>>(stockCounts);
             }
             catch (Exception ex)
@@ -45,8 +46,8 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Company company = await _common.ValidateCompany(role, companyId);
-                StockCount existingStockCounts = await _stockCountRepository.FindOne(u => u.ProductID == stockCount.ProductID && u.CompanyId == company.Id);
+                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
+                StockCount existingStockCounts = await _stockCountRepository.FindOne(u => u.ProductID == stockCount.ProductID && u.ShopId == shop.Id);
                 if (existingStockCounts != null)
                     throw new HttpResponseException($"StockCounts with id '{stockCount.Id}' already exists!");
 
@@ -55,7 +56,7 @@ namespace Infrastructure.Repositories
                 stockCount.CreateDate = DateTime.UtcNow;
                 stockCount.UpdateDate = DateTime.UtcNow;
                 stockCount.DeletedIndicator = false;
-                stockCount.CompanyId = company.Id;
+                stockCount.ShopId = shop.Id;
 
                 await _stockCountRepository.Insert(stockCount);
 
@@ -71,9 +72,9 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Company company = await _common.ValidateCompany(role, companyId);
+                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
                 StockCount existingStockCount = await _stockCountRepository.FindById(stockCount.Id.ToString());
-                if (existingStockCount == null || existingStockCount.CompanyId != company.Id)
+                if (existingStockCount == null || existingStockCount.ShopId != shop.Id)
                     throw new HttpResponseException("Stock Count not found");
 
                 existingStockCount.CountedQuantity = stockCount.CountedQuantity;
@@ -98,9 +99,9 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Company company = await _common.ValidateCompany(role, companyId);
+                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
                 StockCount stockCount = await _stockCountRepository.FindById(id);
-                if (stockCount == null || stockCount.CompanyId != company.Id)
+                if (stockCount == null || stockCount.ShopId != shop.Id)
                     throw new HttpResponseException("StockCounts not found");
                 return new Response<StockCount>(stockCount);
             }
@@ -114,9 +115,9 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Company company = await _common.ValidateCompany(role, companyId);
+                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
                 StockCount stockCount = await _stockCountRepository.FindById(id);
-                if (stockCount == null || stockCount.CompanyId != company.Id)
+                if (stockCount == null || stockCount.ShopId != shop.Id)
                     throw new HttpResponseException("StockCounts not found");
 
                 stockCount.DeletedIndicator = true;

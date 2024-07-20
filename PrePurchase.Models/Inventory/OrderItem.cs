@@ -28,7 +28,7 @@ namespace PrePurchase.Models.Inventory
 
         // Order Item Properties
         [BsonRequired]
-        public ObjectId CompanyId { get; set; }
+        public ObjectId ShopId { get; set; }
         public ObjectId OrderID { get; set; } // Foreign Key
         public ObjectId ProductID { get; set; } // Foreign Key
         public int Quantity { get; set; }

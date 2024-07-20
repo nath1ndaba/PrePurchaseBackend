@@ -33,7 +33,7 @@ public class Category
     public string CategoryName { get; set; }
 
     [BsonRequired]
-    public ObjectId CompanyId { get; set; }
+    public ObjectId ShopId { get; set; }
 
     public ObjectId ParentCategoryId { get; set; }
 

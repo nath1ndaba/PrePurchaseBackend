@@ -26,7 +26,7 @@ namespace PrePurchase.Models.Inventory
 
         // Permission Properties
         [BsonRequired]
-        public ObjectId CompanyId { get; set; }
+        public ObjectId ShopId { get; set; }
         public string PermissionName { get; set; }
     }
 }

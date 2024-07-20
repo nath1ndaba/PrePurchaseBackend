@@ -6,6 +6,7 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using PrePurchase.Models;
 using PrePurchase.Models.Inventory;
+using PrePurchase.Models.PrePurchase;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,10 +30,10 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Company company = await _common.ValidateCompany(role, companyId);
-                IEnumerable<OrderItem> orderItems = await _orderItemsRepository.Find(u => u.CompanyId == company.Id);
+                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
+                IEnumerable<OrderItem> orderItems = await _orderItemsRepository.Find(u => u.ShopId == shop.Id);
                 if (orderItems == null || !orderItems.Any())
-                    throw new HttpResponseException($"No orderItems found for {company.CompanyName}");
+                    throw new HttpResponseException($"No orderItems found for {shop.Name}");
                 return new Response<IEnumerable<OrderItem>>(orderItems);
             }
             catch (Exception ex)
@@ -45,8 +46,8 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Company company = await _common.ValidateCompany(role, companyId);
-                OrderItem existingOrderItems = await _orderItemsRepository.FindOne(u => u.OrderID == orderItems.OrderID && u.CompanyId == company.Id);
+                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
+                OrderItem existingOrderItems = await _orderItemsRepository.FindOne(u => u.OrderID == orderItems.OrderID && u.ShopId == shop.Id);
                 if (existingOrderItems != null)
                     throw new HttpResponseException($"OrderItems with id '{orderItems.OrderID}' already exists!");
 
@@ -55,7 +56,7 @@ namespace Infrastructure.Repositories
                 orderItems.CreateDate = DateTime.UtcNow;
                 orderItems.UpdateDate = DateTime.UtcNow;
                 orderItems.DeletedIndicator = false;
-                orderItems.CompanyId = company.Id;
+                orderItems.ShopId = shop.Id;
 
                 await _orderItemsRepository.Insert(orderItems);
 
@@ -71,9 +72,9 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Company company = await _common.ValidateCompany(role, companyId);
+                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
                 OrderItem existingOrderItem = await _orderItemsRepository.FindById(orderItems.Id.ToString());
-                if (existingOrderItem == null || existingOrderItem.CompanyId != company.Id)
+                if (existingOrderItem == null || existingOrderItem.ShopId != shop.Id)
                     throw new HttpResponseException("OrderItems not found");
 
                 existingOrderItem.UnitPrice = orderItems.UnitPrice;
@@ -97,9 +98,9 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Company company = await _common.ValidateCompany(role, companyId);
+                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
                 OrderItem orderItems = await _orderItemsRepository.FindById(id);
-                if (orderItems == null || orderItems.CompanyId != company.Id)
+                if (orderItems == null || orderItems.ShopId != shop.Id)
                     throw new HttpResponseException("OrderItems not found");
                 return new Response<OrderItem>(orderItems);
             }
@@ -113,9 +114,9 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Company company = await _common.ValidateCompany(role, companyId);
+                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
                 OrderItem orderItems = await _orderItemsRepository.FindById(id);
-                if (orderItems == null || orderItems.CompanyId != company.Id)
+                if (orderItems == null || orderItems.ShopId != shop.Id)
                     throw new HttpResponseException("OrderItems not found");
 
                 orderItems.DeletedIndicator = true;

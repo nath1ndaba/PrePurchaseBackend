@@ -6,6 +6,7 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using PrePurchase.Models;
 using PrePurchase.Models.Inventory;
+using PrePurchase.Models.PrePurchase;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,10 +30,10 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Company company = await _common.ValidateCompany(role, companyId);
-                IEnumerable<PurchaseOrder> purchaseOrderss = await _purchaseOrdersRepository.Find(u => u.CompanyId == company.Id);
+                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
+                IEnumerable<PurchaseOrder> purchaseOrderss = await _purchaseOrdersRepository.Find(u => u.ShopId == shop.Id);
                 if (purchaseOrderss == null || !purchaseOrderss.Any())
-                    throw new HttpResponseException($"No purchaseOrderss found for {company.CompanyName}");
+                    throw new HttpResponseException($"No purchaseOrderss found for {shop.Name}");
                 return new Response<IEnumerable<PurchaseOrder>>(purchaseOrderss);
             }
             catch (Exception ex)
@@ -45,8 +46,8 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Company company = await _common.ValidateCompany(role, companyId);
-                PurchaseOrder existingPurchaseOrders = await _purchaseOrdersRepository.FindOne(u => u.PurchaseOrderNumber == purchaseOrders.PurchaseOrderNumber && u.CompanyId == company.Id);
+                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
+                PurchaseOrder existingPurchaseOrders = await _purchaseOrdersRepository.FindOne(u => u.PurchaseOrderNumber == purchaseOrders.PurchaseOrderNumber && u.ShopId == shop.Id);
                 if (existingPurchaseOrders != null)
                     throw new HttpResponseException($"PurchaseOrders with id '{purchaseOrders.Id}' already exists!");
 
@@ -55,7 +56,7 @@ namespace Infrastructure.Repositories
                 purchaseOrders.CreateDate = DateTime.UtcNow;
                 purchaseOrders.UpdateDate = DateTime.UtcNow;
                 purchaseOrders.DeletedIndicator = false;
-                purchaseOrders.CompanyId = company.Id;
+                purchaseOrders.ShopId = shop.Id;
 
                 await _purchaseOrdersRepository.Insert(purchaseOrders);
 
@@ -71,9 +72,9 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Company company = await _common.ValidateCompany(role, companyId);
+                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
                 PurchaseOrder existingPurchaseOrder = await _purchaseOrdersRepository.FindById(purchaseOrders.Id.ToString());
-                if (existingPurchaseOrder == null || existingPurchaseOrder.CompanyId != company.Id)
+                if (existingPurchaseOrder == null || existingPurchaseOrder.ShopId != shop.Id)
                     throw new HttpResponseException("PurchaseOrders not found");
 
                 existingPurchaseOrder.SupplierID = purchaseOrders.SupplierID;
@@ -97,9 +98,9 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Company company = await _common.ValidateCompany(role, companyId);
+                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
                 PurchaseOrder purchaseOrders = await _purchaseOrdersRepository.FindById(id);
-                if (purchaseOrders == null || purchaseOrders.CompanyId != company.Id)
+                if (purchaseOrders == null || purchaseOrders.ShopId != shop.Id)
                     throw new HttpResponseException("PurchaseOrder not found");
                 return new Response<PurchaseOrder>(purchaseOrders);
             }
@@ -113,9 +114,9 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Company company = await _common.ValidateCompany(role, companyId);
+                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
                 PurchaseOrder purchaseOrders = await _purchaseOrdersRepository.FindById(id);
-                if (purchaseOrders == null || purchaseOrders.CompanyId != company.Id)
+                if (purchaseOrders == null || purchaseOrders.ShopId != shop.Id)
                     throw new HttpResponseException("PurchaseOrders not found");
 
                 purchaseOrders.DeletedIndicator = true;

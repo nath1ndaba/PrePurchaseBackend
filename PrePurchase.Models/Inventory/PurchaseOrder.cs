@@ -32,7 +32,7 @@ namespace PrePurchase.Models.Inventory
 
         // Purchase Order Properties
         [BsonRequired]
-        public ObjectId CompanyId { get; set; }
+        public ObjectId ShopId { get; set; }
         public ObjectId SupplierID { get; set; } // Foreign Key
         public string PurchaseOrderNumber { get; set; }
         public DateTime OrderDate { get; set; }

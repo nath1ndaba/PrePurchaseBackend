@@ -15,7 +15,7 @@ namespace PrePurchase.Models.Inventory
         public ObjectId Id { get; set; } = ObjectId.GenerateNewId();
 
         [BsonRequired]
-        public ObjectId CompanyId { get; set; }
+        public ObjectId ShopId { get; set; }
 
         public DateTime CreateDate { get; set; }
         [BsonRequired]

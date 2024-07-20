@@ -27,7 +27,7 @@ namespace PrePurchase.Models.Inventory
 
         // Stock Count Properties
         [BsonRequired]
-        public ObjectId CompanyId { get; set; }
+        public ObjectId ShopId { get; set; }
         public DateTime CountDate { get; set; }
         public string CountType { get; set; }
         public ObjectId ProductID { get; set; } // Foreign Key

@@ -130,7 +130,7 @@ ICommon common)
 
         public async Task<Response> GetPositionsInfo(string role, string? companyId = null)
         {
-            Company company = await _common.ValidateCompany(role, companyId);
+            Company company = await _common.ValidateCompany<Company>(role, companyId);
 
             List<string> positions = company.Positions;
 
@@ -186,7 +186,7 @@ ICommon common)
         public async Task<Response> UniversalClockings(UniversalClockingModel model, string role, string? companyId = null)
         {
 
-            Company company = await _common.ValidateCompany(role, companyId);
+            Company company = await _common.ValidateCompany<Company>(role, companyId);
 
             CompanyEmployee companyEmployeeData = await _companyEmployees.FindOne(x => x.EmployeeId == model.EmployeeId && x.CompanyId == company.Id) ?? throw new HttpResponseException("No Employee Found");
 

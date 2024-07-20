@@ -4,8 +4,8 @@ using BackendServices.Exceptions;
 using BackendServices.Models;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using PrePurchase.Models;
 using PrePurchase.Models.Inventory;
+using PrePurchase.Models.PrePurchase;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,10 +29,10 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Company company = await _common.ValidateCompany(role, companyId);
-                IEnumerable<Supplier> suppliers = await _supplierRepository.Find(u => u.CompanyId == company.Id);
+                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
+                IEnumerable<Supplier> suppliers = await _supplierRepository.Find(u => u.ShopId == shop.Id);
                 if (suppliers == null || !suppliers.Any())
-                    throw new HttpResponseException($"No suppliers found for {company.CompanyName}");
+                    throw new HttpResponseException($"No suppliers found for {shop.Name}");
                 return new Response<IEnumerable<Supplier>>(suppliers);
             }
             catch (Exception ex)
@@ -45,8 +45,8 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Company company = await _common.ValidateCompany(role, companyId);
-                Supplier existingSuppliers = await _supplierRepository.FindOne(u => u.SupplierName == supplier.SupplierName && u.CompanyId == company.Id);
+                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
+                Supplier existingSuppliers = await _supplierRepository.FindOne(u => u.SupplierName == supplier.SupplierName && u.ShopId == shop.Id);
                 if (existingSuppliers != null)
                     throw new HttpResponseException($"Suppliers with suppliername '{supplier.SupplierName}' already exists!");
 
@@ -55,7 +55,7 @@ namespace Infrastructure.Repositories
                 supplier.CreateDate = DateTime.UtcNow;
                 supplier.UpdateDate = DateTime.UtcNow;
                 supplier.DeletedIndicator = false;
-                supplier.CompanyId = company.Id;
+                supplier.ShopId = shop.Id;
 
                 await _supplierRepository.Insert(supplier);
 
@@ -71,9 +71,9 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Company company = await _common.ValidateCompany(role, companyId);
+                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
                 Supplier existingSupplier = await _supplierRepository.FindById(supplier.Id.ToString());
-                if (existingSupplier == null || existingSupplier.CompanyId != company.Id)
+                if (existingSupplier == null || existingSupplier.ShopId != shop.Id)
                     throw new HttpResponseException("Suppliers not found");
 
                 existingSupplier.SupplierName = supplier.SupplierName;
@@ -99,9 +99,9 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Company company = await _common.ValidateCompany(role, companyId);
+                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
                 Supplier supplier = await _supplierRepository.FindById(id);
-                if (supplier == null || supplier.CompanyId != company.Id)
+                if (supplier == null || supplier.ShopId != shop.Id)
                     throw new HttpResponseException("Suppliers not found");
                 return new Response<Supplier>(supplier);
             }
@@ -115,9 +115,9 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Company company = await _common.ValidateCompany(role, companyId);
+                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
                 Supplier supplier = await _supplierRepository.FindById(id);
-                if (supplier == null || supplier.CompanyId != company.Id)
+                if (supplier == null || supplier.ShopId != shop.Id)
                     throw new HttpResponseException("Suppliers not found");
 
                 supplier.DeletedIndicator = true;

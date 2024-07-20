@@ -6,6 +6,7 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using PrePurchase.Models;
 using PrePurchase.Models.Inventory;
+using PrePurchase.Models.PrePurchase;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,10 +30,10 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Company company = await _common.ValidateCompany(role, companyId);
-                IEnumerable<Product> users = await _userRepository.Find(u => u.CompanyId == company.Id);
+                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
+                IEnumerable<Product> users = await _userRepository.Find(u => u.ShopId == shop.Id);
                 if (users == null || !users.Any())
-                    throw new HttpResponseException($"No users found for {company.CompanyName}");
+                    throw new HttpResponseException($"No users found for {shop.Name}");
                 return new Response<IEnumerable<Product>>(users);
             }
             catch (Exception ex)
@@ -45,8 +46,8 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Company company = await _common.ValidateCompany(role, companyId);
-                Product existingProducts = await _userRepository.FindOne(u => u.Name == user.Name && u.CompanyId == company.Id);
+                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
+                Product existingProducts = await _userRepository.FindOne(u => u.Name == user.Name && u.ShopId == shop.Id);
                 if (existingProducts != null)
                     throw new HttpResponseException($"Products with username '{user.Name}' already exists!");
 
@@ -55,7 +56,7 @@ namespace Infrastructure.Repositories
                 user.CreateDate = DateTime.UtcNow;
                 user.UpdateDate = DateTime.UtcNow;
                 user.DeletedIndicator = false;
-                user.CompanyId = company.Id;
+                user.ShopId = shop.Id;
 
                 await _userRepository.Insert(user);
 
@@ -71,9 +72,9 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Company company = await _common.ValidateCompany(role, companyId);
+                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
                 Product existingProduct = await _userRepository.FindById(user.Id.ToString());
-                if (existingProduct == null || existingProduct.CompanyId != company.Id)
+                if (existingProduct == null || existingProduct.ShopId != shop.Id)
                     throw new HttpResponseException("Products not found");
 
                 existingProduct.Name = user.Name;
@@ -105,9 +106,9 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Company company = await _common.ValidateCompany(role, companyId);
+                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
                 Product user = await _userRepository.FindById(id);
-                if (user == null || user.CompanyId != company.Id)
+                if (user == null || user.ShopId != shop.Id)
                     throw new HttpResponseException("Products not found");
                 return new Response<Product>(user);
             }
@@ -121,9 +122,9 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Company company = await _common.ValidateCompany(role, companyId);
+                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
                 Product user = await _userRepository.FindById(id);
-                if (user == null || user.CompanyId != company.Id)
+                if (user == null || user.ShopId != shop.Id)
                     throw new HttpResponseException("Products not found");
 
                 user.DeletedIndicator = true;

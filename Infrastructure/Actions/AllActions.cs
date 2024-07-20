@@ -106,7 +106,7 @@ ICommon common)
 
         public async Task<Response> UploadAds(DetailedAd model, string createdBy, string updatedBy, string role, string? companyId = null)
         {
-            Company company = await _common.ValidateCompany(role, companyId);
+            Company company = await _common.ValidateCompany<Company>(role, companyId);
 
             model.Id = ObjectId.GenerateNewId();
             model.CreatedBy = ObjectId.Parse(createdBy);
@@ -121,7 +121,7 @@ ICommon common)
 
         public async Task<Response> GetDeatiledAds(string role, string? companyId = null)
         {
-            Company company = await _common.ValidateCompany(role, companyId);
+            Company company = await _common.ValidateCompany<Company>(role, companyId);
 
             IEnumerable<DetailedAd> ads = new List<DetailedAd>();
             if (company.IsHiddenEnv is true)
@@ -136,7 +136,7 @@ ICommon common)
 
         public async Task<Response> GetprocessedTimesSummaries(string role, string? companyId = null)
         {
-            Company company = await _common.ValidateCompany(role, companyId);
+            Company company = await _common.ValidateCompany<Company>(role, companyId);
 
             IEnumerable<ProcessedTimesSummary> times = await processedTimesSummary.Find(x => x.CompanyId == company.Id);
 
@@ -146,7 +146,7 @@ ICommon common)
 
         public async Task<Response> GetProcessedTimesSummariesBatch(string role, string batchCode, string? companyId = null)
         {
-            Company company = await _common.ValidateCompany(role, companyId);
+            Company company = await _common.ValidateCompany<Company>(role, companyId);
 
             IEnumerable<ProcessedTimesSummary>? times = await processedTimesSummary.Find(x => x.CompanyId == company.Id && x.HistoryBatchCode == batchCode);
 
@@ -157,7 +157,7 @@ ICommon common)
 
         public async Task<Response> UpdateEmployeeTimes(AdminManualClockings model, string role, string? companyId = null)
         {
-            Company company = await _common.ValidateCompany(role, companyId);
+            Company company = await _common.ValidateCompany<Company>(role, companyId);
 
 
             CompanyEmployee thisEmployee = await companyEmployees.FindOne(x => x.EmployeeId == model.StaffMemberId && x.CompanyId == company.Id);

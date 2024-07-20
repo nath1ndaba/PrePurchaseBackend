@@ -18,7 +18,7 @@ namespace Infrastructure.Actions.Admin
         {
             try
             {
-                Company company = await _common.ValidateCompany(role, companyId);
+                Company company = await _common.ValidateCompany<Company>(role, companyId);
 
                 IEnumerable<CompanyDepartments> departments = await _companyDepartments.Find(d => d.CompanyId == company.Id);
                 if (departments is null) throw new HttpResponseException($"No Departments for at {company.CompanyName}");
@@ -33,7 +33,7 @@ namespace Infrastructure.Actions.Admin
 
             if (ObjectId.TryParse(companyid, out var _companyId) is false)
                 throw new HttpResponseException("Invalid companyId!!");
-            Company company = await _common.ValidateCompany(role, companyid);
+            Company company = await _common.ValidateCompany<Company>(role, companyid);
 
 
             CompanyDepartments? exists = await _companyDepartments.FindOne(x => x.DepartmentName.ToLower() == model.DepartmentName.ToLower().Trim() && x.CompanyId == company.Id);
@@ -72,7 +72,7 @@ namespace Infrastructure.Actions.Admin
 
             try
             {
-                Company company = await _common.ValidateCompany(role, companyid);
+                Company company = await _common.ValidateCompany<Company>(role, companyid);
 
 
                 CompanyDepartments results = await _companyDepartments.FindOne(d => d.Id == ObjectId.Parse(id) && d.CompanyId == company.Id);
@@ -85,7 +85,7 @@ namespace Infrastructure.Actions.Admin
 
         public async Task<Response> SoftDeleteDepartment(string updatedBy, string id, string role, string? companyid = null)
         {
-            Company company = await _common.ValidateCompany(role, companyid);
+            Company company = await _common.ValidateCompany<Company>(role, companyid);
 
             CompanyDepartments exists = await _companyDepartments.FindOne(x => x.Id == ObjectId.Parse(id) && x.CompanyId == company.Id);
             if (exists is null) throw new HttpResponseException(new Response(HttpStatusCode.NotFound, error: $@" This department does not exists!"));

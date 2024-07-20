@@ -27,7 +27,7 @@ namespace PrePurchase.Models.Inventory
 
         // Product Properties
         [BsonRequired]
-        public ObjectId CompanyId { get; set; }
+        public ObjectId ShopId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public decimal Price { get; set; }

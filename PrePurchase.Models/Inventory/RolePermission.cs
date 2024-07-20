@@ -31,6 +31,6 @@ namespace PrePurchase.Models.Inventory
         public ObjectId RoleID { get; set; } // Foreign Key
         public ObjectId PermissionID { get; set; } // Foreign Key
         [BsonRequired]
-        public ObjectId CompanyId { get; set; }
+        public ObjectId ShopId { get; set; }
     }
 }
