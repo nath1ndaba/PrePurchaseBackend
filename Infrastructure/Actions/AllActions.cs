@@ -35,7 +35,7 @@ namespace Infrastructure.Actions
         private readonly IRepository<EmployeeDetails> employees;
         private readonly IRepository<CompanyEmployee> companyEmployees;
         private readonly IRepository<Company> _companies;
-        private readonly IRepository<User> users;
+        private readonly IRepository<DiscontinuedUser> users;
         private readonly IRepository<Loan> loans;
         private readonly IRepository<LeaveStore> leaveStore;
         private readonly IRepository<Leave> leaves;
@@ -61,7 +61,7 @@ namespace Infrastructure.Actions
             , IRepository<EmployeeDetails> employees
             , IRepository<CompanyEmployee> companyEmployees
             , IRepository<Company> companies
-            , IRepository<User> users
+            , IRepository<DiscontinuedUser> users
             , IRepository<Loan> loans
             , IRepository<LeaveStore> leaveStore
             , IRepository<Leave> leaves

@@ -28,16 +28,16 @@ public class AdminActions : IAdminActions
 
     public async Task<Response> RegisterAdmin(AdminRegisterModel model, ObjectId createdBy)
     {
-        admin.Admin exists = await _admin.FindOne(x =>
+        admin.Admin admin = await _admin.FindOne(x =>
             x.Email.ToLowerInvariant() == model.Email.ToLowerInvariant());
 
-        if (exists is not null)
+        if (admin is not null)
             throw new HttpResponseException(new Response(HttpStatusCode.Conflict,
                 error: $@"An admin ""{model.Name}"" is already registered!"));
 
         var hash = await _passwordManager.Hash(model.Password);
 
-        admin.Admin admin = new()
+        admin.Admin adminData = new()
         {
             CreatedDate = DateTime.UtcNow,
             CreatedBy = createdBy,
@@ -50,9 +50,12 @@ public class AdminActions : IAdminActions
             PhoneNumber = model.PhoneNumber,
             Password = hash,
         };
-        model.Address.UserId = admin.Email;
 
-        await _admin.Insert(admin);
+        admin = await _admin.FindOne(x =>
+           x.Email.ToLowerInvariant() == model.Email.ToLowerInvariant());
+        model.Address.AddressBelongsToId = admin.Id;
+
+        await _admin.Insert(adminData);
         await _address.Insert(model.Address);
         return new Response<admin.Admin>(admin, HttpStatusCode.Created);
     }
@@ -64,22 +67,13 @@ public class AdminActions : IAdminActions
 
         if (exists is null)
             throw new HttpResponseException(new Response(HttpStatusCode.Conflict,
-                error: $@"An admin ""{model.Name}"" is npt found!"));
+                error: $@"An admin ""{model.Name}"" is not found!"));
         if (model.Password is not null)
         {
             var hash = await _passwordManager.Hash(model.Password);
             exists.Password = hash;
         }
 
-        admin.Admin admin = new()
-        {
-            UpdatedDate = DateTime.UtcNow,
-            UpdatedBy = updatedBy,
-            Name = model.Name,
-            Surname = model.Surname,
-            Email = model.Email,
-            PhoneNumber = model.PhoneNumber,
-        };
         exists.UpdatedBy = updatedBy;
         exists.UpdatedDate = DateTime.UtcNow;
         exists.Name = model.Name ?? exists.Name;
@@ -90,7 +84,7 @@ public class AdminActions : IAdminActions
         await _admin.Update(exists.Id.ToString(), exists);
         await _address.Update(model.Address.Id.ToString(), model.Address);
 
-        return new Response<admin.Admin>(admin, HttpStatusCode.Created);
+        return new Response<admin.Admin>(exists, HttpStatusCode.Accepted);
     }
 
     public async Task<Response> GetAdmin(string adminId)

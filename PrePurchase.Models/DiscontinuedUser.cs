@@ -8,7 +8,7 @@ using PrePurchase.Models.Converters;
 namespace PrePurchase.Models
 {
     [BsonIgnoreExtraElements]
-    public class User
+    public class DiscontinuedUser
     {
         [JsonConverter(typeof(ObjectIdConverter))]
         [BsonId]

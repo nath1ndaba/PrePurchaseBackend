@@ -14,7 +14,7 @@ namespace PrePurchase.Models
         [BsonId]
         [BsonRequired]
         public ObjectId Id { get; set; } = ObjectId.GenerateNewId();
-        public string UserId { get; set; }
+        public ObjectId AddressBelongsToId { get; set; }
         public string Street { get; set; }
         public string City { get; set; }
         public string Suburb { get; set; }

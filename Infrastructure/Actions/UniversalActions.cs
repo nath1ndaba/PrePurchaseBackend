@@ -29,7 +29,7 @@ namespace Infrastructure.Actions
         private readonly IRepository<CompanyEmployee> _companyEmployees;
         private readonly IRepository<EmployeeDetails> _employees;
         private readonly IRepository<Company> _companies;
-        private readonly IRepository<User> _users;
+        private readonly IRepository<DiscontinuedUser> _users;
         private readonly IRepository<Loan> _loans;
         private readonly IRepository<LeaveStore> _leaveStore;
         private readonly IRepository<Leave> _leaves;
@@ -55,7 +55,7 @@ namespace Infrastructure.Actions
             , IRepository<EmployeeDetails> employees
             , IRepository<CompanyEmployee> companyEmployees
             , IRepository<Company> companies
-            , IRepository<User> users
+            , IRepository<DiscontinuedUser> users
             , IRepository<Loan> loans
             , IRepository<LeaveStore> leaveStore
             , IRepository<Leave> leaves
@@ -106,7 +106,7 @@ ICommon common)
         public async Task<Response> Login(UniversalLoginModel model)
         {
             string email = model.Email.Trim().ToLowerInvariant();
-            User user = _users.FindOne(x => x.Email == email).Result;
+            DiscontinuedUser user = _users.FindOne(x => x.Email == email).Result;
             if (user is null)
                 throw new HttpResponseException(new Response(HttpStatusCode.Unauthorized, error: "Invalid Email😒"));
 

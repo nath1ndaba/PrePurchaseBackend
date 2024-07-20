@@ -14,10 +14,10 @@ namespace Infrastructure.Actions.Admin
 {
     public class LoginActions : ILoginActions
     {
-        public async Task<LoginResponse> Login(AdminLoginModel model)
+        public async Task<LoginResponse> Login(LoginModel model)
         {
             string email = model.Email.Trim().ToLowerInvariant();
-            User user = _users.FindOne(x => x.Email == email).Result;
+            DiscontinuedUser user = _users.FindOne(x => x.Email == email).Result;
             if (user is null)
                 throw new HttpResponseException(new Response(HttpStatusCode.Unauthorized, error: "Invalid Email😒"));
 
@@ -54,7 +54,7 @@ namespace Infrastructure.Actions.Admin
         }
 
 
-        public LoginActions(IRepository<Company> companies, IRepository<User> users,
+        public LoginActions(IRepository<Company> companies, IRepository<DiscontinuedUser> users,
             IRepository<CompanyEmployee> companyEmployees, IQueryBuilderProvider queryBuilderProvider,
             IPasswordManager passwordManager)
         {
@@ -69,6 +69,6 @@ namespace Infrastructure.Actions.Admin
         private readonly IRepository<CompanyEmployee> _companyEmployees;
         private readonly IQueryBuilderProvider _queryBuilderProvider;
         private readonly IPasswordManager _passwordManager;
-        private readonly IRepository<User> _users;
+        private readonly IRepository<DiscontinuedUser> _users;
     }
 }

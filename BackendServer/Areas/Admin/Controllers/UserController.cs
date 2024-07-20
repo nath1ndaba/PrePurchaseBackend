@@ -24,14 +24,14 @@ namespace BackendServer.V1.Controllers
     {
         [HttpPost("RegisterUser")]
         [AllowAnonymous]
-        [ProducesResponseType(typeof(Response<User>), 201)]
-        public async Task<Response> RegisterUser([FromBody] User model)
+        [ProducesResponseType(typeof(Response<DiscontinuedUser>), 201)]
+        public async Task<Response> RegisterUser([FromBody] DiscontinuedUser model)
         {
             return await _userActions.RegisterUser(model);
         }
 
 
-        public UserController(IUserActions userActions, IAuthContainerModel containerModel, IAuthService authService, IRepository<RefreshToken> refreshTokens) : base(containerModel, authService, refreshTokens)
+        public UserController(IDiscontinuedUserActions userActions, IAuthContainerModel containerModel, IAuthService authService, IRepository<RefreshToken> refreshTokens) : base(containerModel, authService, refreshTokens)
         {
             _userActions = userActions;
 
@@ -58,6 +58,6 @@ namespace BackendServer.V1.Controllers
 
 #nullable disable
 
-        private readonly IUserActions _userActions;
+        private readonly IDiscontinuedUserActions _userActions;
     }
 }

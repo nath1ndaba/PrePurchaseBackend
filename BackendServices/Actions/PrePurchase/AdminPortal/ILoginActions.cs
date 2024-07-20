@@ -6,6 +6,6 @@ namespace BackendServices.Actions.PrePurchase.AdminPortal
 {
     public interface ILoginActions
     {
-        Task<LoginResponse> Login(AdminLoginModel model);
+        Task<LoginResponse> Login(LoginModel model);
     }
 }

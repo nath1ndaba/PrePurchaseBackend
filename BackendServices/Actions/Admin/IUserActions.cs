@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 
 namespace BackendServices.Actions.Admin
 {
-    public interface IUserActions
+    public interface IDiscontinuedUserActions
     {
-        Task<Response> RegisterUser(User model);
+        Task<Response> RegisterUser(DiscontinuedUser model);
         Task<Response> GetUser(string email);
 
 

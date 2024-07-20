@@ -29,6 +29,8 @@ using System.Threading.Tasks;
 using BackendServices.Actions.PrePurchase.AdminPortal;
 using Infrastructure.Actions.PrePurchase.Admin;
 using ILoginActions = BackendServices.Actions.Admin.ILoginActions;
+using Infrastructure.Actions.PrePurchase;
+using BackendServices.Actions.PrePurchase;
 
 namespace Infrastructure
 {
@@ -146,6 +148,9 @@ namespace Infrastructure
 
             //Pre -Purchase
             services.AddScoped<IAdminActions, AdminActions>();
+            services.AddScoped<IShopActions, ShopActions>();
+            services.AddScoped<IUserActions, UserActions>();
+            services.AddScoped<IUserLoginActions, UserLoginActions>();
 
             return services;
         }

@@ -1,13 +1,14 @@
 ﻿using BackendServices;
 using BackendServices.Models;
+using BackendServices.Models.PrePurchase;
+using GeographicLib;
 using MongoDB.Bson;
 using PrePurchase.Models;
+using PrePurchase.Models.PrePurchase;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using GeographicLib;
-using PrePurchase.Models.Payments;
 
 [assembly: InternalsVisibleTo("Infrastructure.Unit.Tests")]
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2, PublicKey=0024000004800000940000000602000000240000525341310004000001000100c547cac37abd99c8db225ef2f6c8a3602f3b3606cc9891605d02baa56104f4cfc0734aa39b93bf7852f7d9266654753cc297e7d2edfe0bac1cdcf9f717241550e0a7b191195b7667bb4f64bcb8e2121380fd1d9d46ad2d92d2d15605093924cceaf74c4861eff62abf69b9291ed0a340e113be11e6a7d3113e92484cf7045cc7")]
@@ -15,7 +16,6 @@ namespace Infrastructure.Helpers
 {
     internal static class ModelHelpers
     {
-
         public static Company Update(this Company company, CompanyUpdateModel updates)
         {
             company.Address = updates.Address ?? company.Address;
@@ -23,6 +23,95 @@ namespace Infrastructure.Helpers
             company.RegisterationNumber = updates.RegisterationNumber ?? company.RegisterationNumber;
 
             return company;
+        }
+
+        public static ShopDto DtoFromShop(this ShopDto dto, Shop shop)
+        {
+            if (dto == null) throw new ArgumentNullException(nameof(dto));
+            if (shop == null) throw new ArgumentNullException(nameof(shop));
+            dto.Id = shop.Id.ToString();
+            dto.CreatedBy = shop.CreatedBy.ToString();
+            dto.CreatedDate = shop.CreatedDate;
+            dto.UpdatedDate = shop.UpdatedDate;
+            dto.UpdatedBy = shop.UpdatedBy.ToString();
+            dto.DeletedIndicator = shop.DeletedIndicator;
+            dto.Name = shop.Name;
+            dto.RegisterationNumber = shop.RegisterationNumber;
+            dto.Email = shop.Email;
+            dto.ContactNumber = shop.ContactNumber;
+            dto.QRCode = shop.QRCode;
+            dto.Timestamp = shop.Timestamp;
+            dto.LicenseExpiryDate = shop.LicenseExpiryDate;
+            return dto;
+        }
+
+        public static Shop DtoToShop(this Shop shop, ShopDto dto)
+        {
+            if (shop == null) throw new ArgumentNullException(nameof(shop));
+            if (dto == null) throw new ArgumentNullException(nameof(dto));
+            shop.Id = ObjectId.Parse(dto.Id);
+            shop.CreatedBy = ObjectId.Parse(dto.CreatedBy);
+            shop.CreatedDate = dto.CreatedDate;
+            shop.UpdatedDate = dto.UpdatedDate;
+            shop.UpdatedBy = ObjectId.Parse(dto.UpdatedBy);
+            shop.DeletedIndicator = dto.DeletedIndicator;
+            shop.Name = dto.Name;
+            shop.RegisterationNumber = dto.RegisterationNumber;
+            shop.Email = dto.Email;
+            shop.ContactNumber = dto.ContactNumber;
+            shop.QRCode = dto.QRCode;
+            shop.Timestamp = dto.Timestamp;
+            shop.LicenseExpiryDate = dto.LicenseExpiryDate;
+            return shop;
+        }
+        public static User DtoToUser(this User user, UserDto dto)
+        {
+            if (user == null) throw new ArgumentNullException(nameof(user));
+            if (dto == null) throw new ArgumentNullException(nameof(dto));
+
+            user.Id = ObjectId.Parse(dto.Id);
+            user.CreatedBy = ObjectId.Parse(dto.CreatedBy);
+            user.CreatedDate = dto.CreatedDate;
+            user.UpdatedDate = dto.UpdatedDate;
+            user.UpdatedBy = ObjectId.Parse(dto.UpdatedBy);
+            user.DeletedIndicator = dto.DeletedIndicator;
+            user.Name = dto.Name;
+            user.SurName = dto.SurName;
+            user.UserName = dto.UserName;
+            user.PhoneNumber = dto.PhoneNumber;
+            user.Email = dto.Email;
+            user.Password = dto.Password;
+            user.Role = dto.Role;
+            foreach (var shopId in dto.ShopId)
+            {
+                user.ShopId.Add(ObjectId.Parse(shopId));
+            }
+
+            return user;
+        }
+        public static UserDto DtoFromUser(this UserDto dto, User shop)
+        {
+            if (dto == null) throw new ArgumentNullException(nameof(dto));
+            if (shop == null) throw new ArgumentNullException(nameof(shop));
+
+            dto.Id = shop.Id.ToString();
+            dto.CreatedBy = shop.CreatedBy.ToString();
+            dto.CreatedDate = shop.CreatedDate;
+            dto.UpdatedDate = shop.UpdatedDate;
+            dto.UpdatedBy = shop.UpdatedBy.ToString();
+            dto.DeletedIndicator = shop.DeletedIndicator;
+            dto.Name = shop.Name;
+            dto.SurName = shop.SurName;
+            dto.UserName = shop.UserName;
+            dto.PhoneNumber = shop.PhoneNumber;
+            dto.Email = shop.Email;
+            dto.Password = shop.Password;
+            dto.Role = shop.Role;
+            foreach (var shopId in shop.ShopId)
+            {
+                dto.ShopId.Add(shopId.ToString());
+            }
+            return dto;
         }
 
         public static CompanyEmployee CreateCompanyEmployeeFrom(this EmployeeDetails employeeDetails, string department, string position, ObjectId companyId)

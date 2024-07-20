@@ -1,19 +1,24 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
-    </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<LangVersion>Preview</LangVersion>
+	</PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.14.1"/>
-    </ItemGroup>
+	<ItemGroup>
+		<Compile Remove="Actions\PrePurchase\Residents\**" />
+		<Compile Remove="Actions\PrePurchase\ShopOwners\**" />
+		<EmbeddedResource Remove="Actions\PrePurchase\Residents\**" />
+		<EmbeddedResource Remove="Actions\PrePurchase\ShopOwners\**" />
+		<None Remove="Actions\PrePurchase\Residents\**" />
+		<None Remove="Actions\PrePurchase\ShopOwners\**" />
+	</ItemGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\PrePurchase.Models\PrePurchase.Models.csproj" />
-    </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.14.1" />
+	</ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Actions\PrePurchase\Residents\" />
-      <Folder Include="Actions\PrePurchase\ShopOwners\" />
-    </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\PrePurchase.Models\PrePurchase.Models.csproj" />
+	</ItemGroup>
 </Project>

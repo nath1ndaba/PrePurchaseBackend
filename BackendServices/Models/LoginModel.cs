@@ -2,13 +2,14 @@
 
 namespace BackendServices.Models
 {
-    public record AdminLoginModel(
-        [Required] string Email, 
+    public record LoginModel(
+         string Email,
+         string UserName,
         [Required] string Password)
     {
-        public AdminLoginModel Sanitize()
+        public LoginModel Sanitize()
             => this with { Email = Email.ToLowerInvariant() };
-    }  
-    
-   
+    }
+
+
 }

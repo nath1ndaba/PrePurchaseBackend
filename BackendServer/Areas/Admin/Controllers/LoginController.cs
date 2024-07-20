@@ -1,10 +1,12 @@
 ﻿using BackendServices;
 using BackendServices.Actions.Admin;
+using BackendServices.Actions.PrePurchase;
 using BackendServices.JWT;
 using BackendServices.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PrePurchase.Models;
+using PrePurchase.Models.PrePurchase;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -24,38 +26,38 @@ namespace BackendServer.V1.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ProducesResponseType(typeof(Response<SucessfulLogin>), 200)]
-        public async Task<Response> Login([FromBody] AdminLoginModel model)
+        public async Task<Response> Login([FromBody] LoginModel model)
         {
-            LoginResponse response = await _loginActions.Login(model.Sanitize());
+            UserLoginResponse response = await _userLoginActions.UserLogin(model.Sanitize());
             JwtTokenModel jwt = await GetAuthTokens(response);
 
             SucessfulLogin sucessfulLogin = new()
             {
-                LoginResponse = response,
+                UserLoginResponse = response,
                 JwtTokenModel = jwt
             };
 
             return new Response<SucessfulLogin>(sucessfulLogin);
         }
 
-        public LoginController(ILoginActions loginActions, IAuthContainerModel containerModel, IAuthService authService,
+        public LoginController(IUserLoginActions loginActions, IAuthContainerModel containerModel, IAuthService authService,
             IRepository<RefreshToken> refreshTokens) : base(containerModel, authService, refreshTokens)
         {
-            _loginActions = loginActions;
+            _userLoginActions = loginActions;
         }
 
-        private Task<JwtTokenModel> GetAuthTokens(LoginResponse loginResponse)
+        private Task<JwtTokenModel> GetAuthTokens(UserLoginResponse loginResponse)
         {
             Claim[] claims =
             {
-                new(ClaimTypes.Role, AuthRoles.Owner), new(ClaimTypes.Email, loginResponse.LoggedUserEmailAddress),
-                new(ClaimTypes.NameIdentifier, loginResponse.Id),
-                new(JwtRegisteredClaimNames.UniqueName, loginResponse.Id)
+                new(ClaimTypes.Role, AuthRoles.Owner), new(ClaimTypes.Email, loginResponse.User.Email),
+                new(ClaimTypes.NameIdentifier, loginResponse.User.Id.ToString()),
+                new(JwtRegisteredClaimNames.UniqueName, loginResponse.User.Id.ToString())
             };
 
             return GetAuthTokens(claims);
         }
 
-        private readonly ILoginActions _loginActions;
+        private readonly IUserLoginActions _userLoginActions;
     }
 }
