@@ -105,7 +105,7 @@ namespace Infrastructure
 
             services.AddAuthorization(config =>
             {
-                config.AddPolicy(AuthPolicies.Company, policyBuilder =>
+                config.AddPolicy(AuthPolicies.Shop, policyBuilder =>
                 {
                     policyBuilder.RequireClaim(ClaimTypes.Role);
                     policyBuilder.RequireRole(AuthRoles.Manager, AuthRoles.Owner);

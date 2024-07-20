@@ -12,7 +12,7 @@
 
     public static class AuthPolicies
     {
-        public const string Company = "company";
+        public const string Shop = "shop";
 
     }
 

@@ -21,7 +21,7 @@ namespace BackendServer.V1.Controllers
     [Consumes("application/json")]
     [Area("api/v1")]
     [Route("[area]/[controller]")]
-    [Authorize(Policy = AuthPolicies.Company)]
+    [Authorize(Policy = AuthPolicies.Shop)]
     [ProducesResponseType(typeof(Response), 400)]
     [ProducesResponseType(typeof(Response), 500)]
     [ApiController]
