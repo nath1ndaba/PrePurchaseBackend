@@ -22,7 +22,7 @@
 //    [Consumes("application/json")]
 //    [Area("Inventory")]
 //    [Route("[area]/[controller]")]
-//    [Authorize(Policy = AuthPolicies.Company)]
+//    [Authorize(Policy = AuthPolicies.shop)]
 //    [ProducesResponseType(typeof(Response), 400)]
 //    [ProducesResponseType(typeof(Response), 500)]
 //    [ApiController]
@@ -36,13 +36,13 @@
 
 //        //[HttpPost]
 //        //[ProducesResponseType(typeof(Response<Supplier>), 200)]
-//        //public async Task<Response> AddSupplier([FromBody] Supplier model, [FromQuery] string companyid = null)
+//        //public async Task<Response> AddSupplier([FromBody] Supplier model, [FromQuery] string shopid = null)
 //        //{
-//        //    RequireSupplierId(companyid);
+//        //    RequireSupplierId(shopid);
 //        //    string createdBy = User.FindFirstValue(ClaimTypes.Name);
 //        //    string updatedBy = createdBy;
 //        //    string role = GetRole();
-//        //    Response response = await actions.AddSupplier(createdBy, updatedBy, model, role, companyid);
+//        //    Response response = await actions.AddSupplier(createdBy, updatedBy, model, role, shopid);
 
 //        //    if (response is not Response<Supplier> correspondingResponse) return response;
 
@@ -51,13 +51,13 @@
 
 //        [HttpPut]
 //        [ProducesResponseType(typeof(Response<Supplier>), 200)]
-//        public async Task<Response> UpdateSupplier([FromBody] Supplier model, [FromQuery] string companyid = null)
+//        public async Task<Response> UpdateSupplier([FromBody] Supplier model, [FromQuery] string shopid = null)
 //        {
-//            RequireSupplierId(companyid);
+//            RequireSupplierId(shopid);
 //            string updatedBy = User.FindFirstValue(ClaimTypes.Name);
 //            string role = GetRole();
 
-//            Response response = await actions.UpdateSupplier(updatedBy, model, role, companyid);
+//            Response response = await actions.UpdateSupplier(updatedBy, model, role, shopid);
 
 //            if (response is not Response<Supplier> correspondingResponse) return response;
 
@@ -66,32 +66,32 @@
 
 //        [HttpGet]
 //        [ProducesResponseType(typeof(Response<Supplier>), 200)]
-//        public async Task<Response> GetSupplier([FromQuery] string companyid = null)
+//        public async Task<Response> GetSupplier([FromQuery] string shopid = null)
 //        {
-//            RequireSupplierId(companyid);
+//            RequireSupplierId(shopid);
 //            string role = GetRole();
-//            return await actions.GetSupplier(Id, role, companyid);
+//            return await actions.GetSupplier(Id, role, shopid);
 //        }
 
 //        [HttpGet("{id}")]
 //        [ProducesResponseType(typeof(Response<List<Supplier>>), 200)]
-//        public async Task<Response> GetSupplier([FromRoute] string id, [FromQuery] string companyid = null)
+//        public async Task<Response> GetSupplier([FromRoute] string id, [FromQuery] string shopid = null)
 //        {
-//            RequireSupplierId(companyid);
+//            RequireSupplierId(shopid);
 //            string role = GetRole();
 
-//            return await actions.GetSupplier(id, role, companyid);
+//            return await actions.GetSupplier(id, role, shopid);
 //        }
 
 //        [HttpDelete("{id}")]
 //        [ProducesResponseType(typeof(Response<List<Supplier>>), 200)]
-//        public async Task<Response> SoftDeleteSupplier([FromRoute] string id, [FromQuery] string companyid = null)
+//        public async Task<Response> SoftDeleteSupplier([FromRoute] string id, [FromQuery] string shopid = null)
 //        {
-//            RequireSupplierId(companyid);
+//            RequireSupplierId(shopid);
 //            string updatedBy = User.FindFirstValue(ClaimTypes.Name);
 //            string role = GetRole();
 
-//            return await actions.SoftDeleteSupplier(updatedBy, id, role, companyid);
+//            return await actions.SoftDeleteSupplier(updatedBy, id, role, shopid);
 //        }
 
 //        private string GetRole()

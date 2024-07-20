@@ -35,13 +35,13 @@ namespace BackendServer.V1.Controllers
 
         [HttpPost]
         [ProducesResponseType(typeof(Response<PurchaseOrder>), 200)]
-        public async Task<Response> AddPurchaseOrder([FromBody] PurchaseOrder model, [FromQuery] string companyid = null)
+        public async Task<Response> AddPurchaseOrder([FromBody] PurchaseOrder model, [FromQuery] string shopid = null)
         {
-            RequirePurchaseOrderId(companyid);
+            RequirePurchaseOrderId(shopid);
             string createdBy = User.FindFirstValue(ClaimTypes.Name);
             string updatedBy = createdBy;
             string role = GetRole();
-            Response response = await actions.AddPurchaseOrder(createdBy, updatedBy, model, role, companyid);
+            Response response = await actions.AddPurchaseOrder(createdBy, updatedBy, model, role, shopid);
 
             if (response is not Response<PurchaseOrder> correspondingResponse) return response;
 
@@ -50,13 +50,13 @@ namespace BackendServer.V1.Controllers
 
         [HttpPut]
         [ProducesResponseType(typeof(Response<PurchaseOrder>), 200)]
-        public async Task<Response> UpdatePurchaseOrder([FromBody] PurchaseOrder model, [FromQuery] string companyid = null)
+        public async Task<Response> UpdatePurchaseOrder([FromBody] PurchaseOrder model, [FromQuery] string shopid = null)
         {
-            RequirePurchaseOrderId(companyid);
+            RequirePurchaseOrderId(shopid);
             string updatedBy = User.FindFirstValue(ClaimTypes.Name);
             string role = GetRole();
 
-            Response response = await actions.UpdatePurchaseOrder(updatedBy, model, role, companyid);
+            Response response = await actions.UpdatePurchaseOrder(updatedBy, model, role, shopid);
 
             if (response is not Response<PurchaseOrder> correspondingResponse) return response;
 
@@ -65,32 +65,32 @@ namespace BackendServer.V1.Controllers
 
         [HttpGet]
         [ProducesResponseType(typeof(Response<PurchaseOrder>), 200)]
-        public async Task<Response> GetPurchaseOrder([FromQuery] string companyid = null)
+        public async Task<Response> GetPurchaseOrder([FromQuery] string shopid = null)
         {
-            RequirePurchaseOrderId(companyid);
+            RequirePurchaseOrderId(shopid);
             string role = GetRole();
-            return await actions.GetPurchaseOrder(Id, role, companyid);
+            return await actions.GetPurchaseOrder(Id, role, shopid);
         }
 
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(Response<List<PurchaseOrder>>), 200)]
-        public async Task<Response> GetPurchaseOrder([FromRoute] string id, [FromQuery] string companyid = null)
+        public async Task<Response> GetPurchaseOrder([FromRoute] string id, [FromQuery] string shopid = null)
         {
-            RequirePurchaseOrderId(companyid);
+            RequirePurchaseOrderId(shopid);
             string role = GetRole();
 
-            return await actions.GetPurchaseOrder(id, role, companyid);
+            return await actions.GetPurchaseOrder(id, role, shopid);
         }
 
         [HttpDelete("{id}")]
         [ProducesResponseType(typeof(Response<List<PurchaseOrder>>), 200)]
-        public async Task<Response> SoftDeletePurchaseOrder([FromRoute] string id, [FromQuery] string companyid = null)
+        public async Task<Response> SoftDeletePurchaseOrder([FromRoute] string id, [FromQuery] string shopid = null)
         {
-            RequirePurchaseOrderId(companyid);
+            RequirePurchaseOrderId(shopid);
             string updatedBy = User.FindFirstValue(ClaimTypes.Name);
             string role = GetRole();
 
-            return await actions.SoftDeletePurchaseOrder(updatedBy, id, role, companyid);
+            return await actions.SoftDeletePurchaseOrder(updatedBy, id, role, shopid);
         }
 
         private string GetRole()

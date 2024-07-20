@@ -35,13 +35,13 @@ namespace BackendServer.V1.Controllers
 
         [HttpPost]
         [ProducesResponseType(typeof(Response<OrderItem>), 200)]
-        public async Task<Response> AddOrderItem([FromBody] OrderItem model, [FromQuery] string companyid = null)
+        public async Task<Response> AddOrderItem([FromBody] OrderItem model, [FromQuery] string shopid = null)
         {
-            RequireOrderItemId(companyid);
+            RequireOrderItemId(shopid);
             string createdBy = User.FindFirstValue(ClaimTypes.Name);
             string updatedBy = createdBy;
             string role = GetOrderItem();
-            Response response = await actions.AddOrderItem(createdBy, updatedBy, model, role, companyid);
+            Response response = await actions.AddOrderItem(createdBy, updatedBy, model, role, shopid);
 
             if (response is not Response<OrderItem> correspondingResponse) return response;
 
@@ -50,13 +50,13 @@ namespace BackendServer.V1.Controllers
 
         [HttpPut]
         [ProducesResponseType(typeof(Response<OrderItem>), 200)]
-        public async Task<Response> UpdateOrderItem([FromBody] OrderItem model, [FromQuery] string companyid = null)
+        public async Task<Response> UpdateOrderItem([FromBody] OrderItem model, [FromQuery] string shopid = null)
         {
-            RequireOrderItemId(companyid);
+            RequireOrderItemId(shopid);
             string updatedBy = User.FindFirstValue(ClaimTypes.Name);
             string role = GetOrderItem();
 
-            Response response = await actions.UpdateOrderItem(updatedBy, model, role, companyid);
+            Response response = await actions.UpdateOrderItem(updatedBy, model, role, shopid);
 
             if (response is not Response<OrderItem> correspondingResponse) return response;
 
@@ -65,32 +65,32 @@ namespace BackendServer.V1.Controllers
 
         [HttpGet]
         [ProducesResponseType(typeof(Response<OrderItem>), 200)]
-        public async Task<Response> GetOrderItem([FromQuery] string companyid = null)
+        public async Task<Response> GetOrderItem([FromQuery] string shopid = null)
         {
-            RequireOrderItemId(companyid);
+            RequireOrderItemId(shopid);
             string role = GetOrderItem();
-            return await actions.GetOrderItem(Id, role, companyid);
+            return await actions.GetOrderItem(Id, role, shopid);
         }
 
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(Response<List<OrderItem>>), 200)]
-        public async Task<Response> GetOrderItem([FromRoute] string id, [FromQuery] string companyid = null)
+        public async Task<Response> GetOrderItem([FromRoute] string id, [FromQuery] string shopid = null)
         {
-            RequireOrderItemId(companyid);
+            RequireOrderItemId(shopid);
             string role = GetOrderItem();
 
-            return await actions.GetOrderItem(id, role, companyid);
+            return await actions.GetOrderItem(id, role, shopid);
         }
 
         [HttpDelete("{id}")]
         [ProducesResponseType(typeof(Response<List<OrderItem>>), 200)]
-        public async Task<Response> SoftDeleteOrderItem([FromRoute] string id, [FromQuery] string companyid = null)
+        public async Task<Response> SoftDeleteOrderItem([FromRoute] string id, [FromQuery] string shopid = null)
         {
-            RequireOrderItemId(companyid);
+            RequireOrderItemId(shopid);
             string updatedBy = User.FindFirstValue(ClaimTypes.Name);
             string role = GetOrderItem();
 
-            return await actions.SoftDeleteOrderItem(updatedBy, id, role, companyid);
+            return await actions.SoftDeleteOrderItem(updatedBy, id, role, shopid);
         }
 
         private string GetOrderItem()

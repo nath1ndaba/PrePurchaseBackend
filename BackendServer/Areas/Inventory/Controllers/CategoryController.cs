@@ -35,13 +35,13 @@ namespace BackendServer.V1.Controllers
 
         [HttpPost]
         [ProducesResponseType(typeof(Response<Category>), 200)]
-        public async Task<Response> AddCategory([FromBody] Category model, [FromQuery] string companyid = null)
+        public async Task<Response> AddCategory([FromBody] Category model, [FromQuery] string shopid = null)
         {
-            RequireCategoryId(companyid);
+            RequireCategoryId(shopid);
             string createdBy = User.FindFirstValue(ClaimTypes.Name);
             string updatedBy = createdBy;
             string role = GetRole();
-            Response response = await actions.AddCategory(createdBy, updatedBy, model, role, companyid);
+            Response response = await actions.AddCategory(createdBy, updatedBy, model, role, shopid);
 
             if (response is not Response<Category> correspondingResponse) return response;
 
@@ -50,13 +50,13 @@ namespace BackendServer.V1.Controllers
 
         [HttpPut]
         [ProducesResponseType(typeof(Response<Category>), 200)]
-        public async Task<Response> UpdateCategory([FromBody] Category model, [FromQuery] string companyid = null)
+        public async Task<Response> UpdateCategory([FromBody] Category model, [FromQuery] string shopid = null)
         {
-            RequireCategoryId(companyid);
+            RequireCategoryId(shopid);
             string updatedBy = User.FindFirstValue(ClaimTypes.Name);
             string role = GetRole();
 
-            Response response = await actions.UpdateCategory(updatedBy, model, role, companyid);
+            Response response = await actions.UpdateCategory(updatedBy, model, role, shopid);
 
             if (response is not Response<Category> correspondingResponse) return response;
 
@@ -65,32 +65,32 @@ namespace BackendServer.V1.Controllers
 
         [HttpGet]
         [ProducesResponseType(typeof(Response<Category>), 200)]
-        public async Task<Response> GetCategory([FromQuery] string companyid = null)
+        public async Task<Response> GetCategory([FromQuery] string shopid = null)
         {
-            RequireCategoryId(companyid);
+            RequireCategoryId(shopid);
             string role = GetRole();
-            return await actions.GetCategory(Id, role, companyid);
+            return await actions.GetCategory(Id, role, shopid);
         }
 
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(Response<List<Category>>), 200)]
-        public async Task<Response> GetCategory([FromRoute] string id, [FromQuery] string companyid = null)
+        public async Task<Response> GetCategory([FromRoute] string id, [FromQuery] string shopid = null)
         {
-            RequireCategoryId(companyid);
+            RequireCategoryId(shopid);
             string role = GetRole();
 
-            return await actions.GetCategory(id, role, companyid);
+            return await actions.GetCategory(id, role, shopid);
         }
 
         [HttpDelete("{id}")]
         [ProducesResponseType(typeof(Response<List<Category>>), 200)]
-        public async Task<Response> SoftDeleteCategory([FromRoute] string id, [FromQuery] string companyid = null)
+        public async Task<Response> SoftDeleteCategory([FromRoute] string id, [FromQuery] string shopid = null)
         {
-            RequireCategoryId(companyid);
+            RequireCategoryId(shopid);
             string updatedBy = User.FindFirstValue(ClaimTypes.Name);
             string role = GetRole();
 
-            return await actions.SoftDeleteCategory(updatedBy, id, role, companyid);
+            return await actions.SoftDeleteCategory(updatedBy, id, role, shopid);
         }
 
         private string GetRole()

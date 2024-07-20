@@ -35,13 +35,13 @@ namespace BackendServer.V1.Controllers
 
         [HttpPost]
         [ProducesResponseType(typeof(Response<StockCount>), 200)]
-        public async Task<Response> AddStockCount([FromBody] StockCount model, [FromQuery] string companyid = null)
+        public async Task<Response> AddStockCount([FromBody] StockCount model, [FromQuery] string shopid = null)
         {
-            RequireStockCountId(companyid);
+            RequireStockCountId(shopid);
             string createdBy = User.FindFirstValue(ClaimTypes.Name);
             string updatedBy = createdBy;
             string role = GetRole();
-            Response response = await actions.AddStockCount(createdBy, updatedBy, model, role, companyid);
+            Response response = await actions.AddStockCount(createdBy, updatedBy, model, role, shopid);
 
             if (response is not Response<StockCount> correspondingResponse) return response;
 
@@ -50,13 +50,13 @@ namespace BackendServer.V1.Controllers
 
         [HttpPut]
         [ProducesResponseType(typeof(Response<StockCount>), 200)]
-        public async Task<Response> UpdateStockCount([FromBody] StockCount model, [FromQuery] string companyid = null)
+        public async Task<Response> UpdateStockCount([FromBody] StockCount model, [FromQuery] string shopid = null)
         {
-            RequireStockCountId(companyid);
+            RequireStockCountId(shopid);
             string updatedBy = User.FindFirstValue(ClaimTypes.Name);
             string role = GetRole();
 
-            Response response = await actions.UpdateStockCount(updatedBy, model, role, companyid);
+            Response response = await actions.UpdateStockCount(updatedBy, model, role, shopid);
 
             if (response is not Response<StockCount> correspondingResponse) return response;
 
@@ -65,32 +65,32 @@ namespace BackendServer.V1.Controllers
 
         [HttpGet]
         [ProducesResponseType(typeof(Response<StockCount>), 200)]
-        public async Task<Response> GetStockCount([FromQuery] string companyid = null)
+        public async Task<Response> GetStockCount([FromQuery] string shopid = null)
         {
-            RequireStockCountId(companyid);
+            RequireStockCountId(shopid);
             string role = GetRole();
-            return await actions.GetStockCount(Id, role, companyid);
+            return await actions.GetStockCount(Id, role, shopid);
         }
 
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(Response<List<StockCount>>), 200)]
-        public async Task<Response> GetStockCount([FromRoute] string id, [FromQuery] string companyid = null)
+        public async Task<Response> GetStockCount([FromRoute] string id, [FromQuery] string shopid = null)
         {
-            RequireStockCountId(companyid);
+            RequireStockCountId(shopid);
             string role = GetRole();
 
-            return await actions.GetStockCount(id, role, companyid);
+            return await actions.GetStockCount(id, role, shopid);
         }
 
         [HttpDelete("{id}")]
         [ProducesResponseType(typeof(Response<List<StockCount>>), 200)]
-        public async Task<Response> SoftDeleteStockCount([FromRoute] string id, [FromQuery] string companyid = null)
+        public async Task<Response> SoftDeleteStockCount([FromRoute] string id, [FromQuery] string shopid = null)
         {
-            RequireStockCountId(companyid);
+            RequireStockCountId(shopid);
             string updatedBy = User.FindFirstValue(ClaimTypes.Name);
             string role = GetRole();
 
-            return await actions.SoftDeleteStockCount(updatedBy, id, role, companyid);
+            return await actions.SoftDeleteStockCount(updatedBy, id, role, shopid);
         }
 
         private string GetRole()
