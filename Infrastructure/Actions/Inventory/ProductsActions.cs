@@ -41,6 +41,21 @@ namespace Infrastructure.Repositories
                 throw new HttpResponseException(ex.Message);
             }
         }
+        public async Task<Response> GetProductsForCategory(string role, string categoryId, string shopId)
+        {
+            try
+            {
+                Shop shop = await _common.ValidateCompany<Shop>(role, shopId);
+                IEnumerable<Product> products = await _productRepository.Find(x => x.ShopId == shop.Id && x.CategoryID == ObjectId.Parse(categoryId));
+                if (products == null || !products.Any())
+                    throw new HttpResponseException($"No products found for {shop.Name}");
+                return new Response<IEnumerable<Product>>(products, HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                throw new HttpResponseException(ex.Message);
+            }
+        }
 
         public async Task<Response> AddProduct(string createdBy, string updatedBy, Product product, string role, string? shopId = null)
         {

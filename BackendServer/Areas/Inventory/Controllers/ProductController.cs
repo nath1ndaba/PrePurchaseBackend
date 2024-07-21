@@ -63,13 +63,22 @@ namespace BackendServer.V1.Controllers
             return new Response<Product>(correspondingResponse.Data!);
         }
 
-        [HttpGet]
+        [HttpGet("{shopId}")]
         [ProducesResponseType(typeof(Response<Product>), 200)]
-        public async Task<Response> GetProduct([FromQuery] string shopId = null)
+        public async Task<Response> GetProducts([FromRoute] string shopId)
         {
             RequireProductId(shopId);
             string role = GetRole();
-            return await actions.GetProduct(Id, role, shopId);
+            return await actions.GetProducts(role, shopId);
+        }
+
+        [HttpGet("productsforcategory")]
+        [ProducesResponseType(typeof(Response<Product>), 200)]
+        public async Task<Response> GetProductsForCategory([FromQuery] string categoryId, [FromQuery] string shopId)
+        {
+            RequireProductId(shopId);
+            string role = GetRole();
+            return await actions.GetProductsForCategory(role, categoryId, shopId);
         }
 
         [HttpGet("{id}")]
