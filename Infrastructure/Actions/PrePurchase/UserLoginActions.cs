@@ -2,10 +2,12 @@
 using BackendServices.Actions.PrePurchase;
 using BackendServices.Exceptions;
 using BackendServices.Models;
+using BackendServices.Models.Inventory;
 using BackendServices.Models.PrePurchase;
 using Infrastructure.Helpers;
 using Microsoft.Extensions.Logging;
 using PrePurchase.Models;
+using PrePurchase.Models.Inventory;
 using PrePurchase.Models.PrePurchase;
 using System;
 using System.Collections.Generic;
@@ -20,6 +22,7 @@ namespace Infrastructure.Actions.PrePurchase
         private readonly IRepository<Address> _address;
         private readonly IRepository<Shop> _shop;
         private readonly IRepository<User> _users;
+        private readonly IRepository<Product> _product;
         private readonly IQueryBuilderProvider _queryBuilderProvider;
         private readonly IPasswordManager _passwordManager;
         private readonly ILogger<UserLoginActions> _logger;
@@ -28,6 +31,7 @@ namespace Infrastructure.Actions.PrePurchase
             IRepository<Address> address,
             IRepository<User> users,
             IRepository<Shop> shop,
+            IRepository<Product> product,
             IQueryBuilderProvider queryBuilderProvider,
             IPasswordManager passwordManager,
             ILogger<UserLoginActions> logger)
@@ -35,6 +39,7 @@ namespace Infrastructure.Actions.PrePurchase
             _address = address ?? throw new ArgumentNullException(nameof(address));
             _users = users ?? throw new ArgumentNullException(nameof(users));
             _shop = shop ?? throw new ArgumentNullException(nameof(shop));
+            _product = product ?? throw new ArgumentNullException(nameof(product));
             _queryBuilderProvider = queryBuilderProvider ?? throw new ArgumentNullException(nameof(queryBuilderProvider));
             _passwordManager = passwordManager ?? throw new ArgumentNullException(nameof(passwordManager));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -94,10 +99,20 @@ namespace Infrastructure.Actions.PrePurchase
             userInfo.DtoFromUser(user);
             userInfo.Address = await _address.FindOne(x => x.AddressBelongsToId == user.Id) ?? new Address();
 
+            var products = await _product.Find(x => user.ShopId.Contains(x.ShopId));
+            var productsResults = new List<ProductDto>();
+            foreach (var product in products)
+            {
+                var dto = new ProductDto();
+                dto.DtoFromProduct(product);
+                productsResults.Add(dto);
+            }
+
             var loginResponse = new UserLoginResponse
             {
                 User = userInfo,
-                Shop = new List<ShopDto>()
+                Products = productsResults,
+                Shop = [],
             };
             if (user.Role != UserRole.Resident)
             {

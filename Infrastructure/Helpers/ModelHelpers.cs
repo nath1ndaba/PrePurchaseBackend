@@ -1,9 +1,11 @@
 ﻿using BackendServices;
 using BackendServices.Models;
+using BackendServices.Models.Inventory;
 using BackendServices.Models.PrePurchase;
 using GeographicLib;
 using MongoDB.Bson;
 using PrePurchase.Models;
+using PrePurchase.Models.Inventory;
 using PrePurchase.Models.PrePurchase;
 using System;
 using System.Collections.Generic;
@@ -113,6 +115,65 @@ namespace Infrastructure.Helpers
             }
             return dto;
         }
+
+        public static ProductDto DtoFromProduct(this ProductDto dto, Product product)
+        {
+            if (dto == null) throw new ArgumentNullException(nameof(dto));
+            if (product == null) throw new ArgumentNullException(nameof(product));
+
+            dto.Id = product.Id.ToString();
+            dto.CreateDate = product.CreateDate;
+            dto.UpdateDate = product.UpdateDate;
+            dto.CreatedBy = product.CreatedBy.ToString();
+            dto.UpdatedBy = product.UpdatedBy.ToString();
+            dto.DeletedIndicator = product.DeletedIndicator;
+            dto.ShopId = product.ShopId.ToString();
+            dto.Name = product.Name;
+            dto.Description = product.Description;
+            dto.Price = product.Price;
+            dto.Barcode = product.Barcode;
+            dto.CategoryID = product.CategoryID.ToString();
+            dto.SupplierID = product.SupplierID.ToString();
+            dto.StockQuantity = product.StockQuantity;
+            dto.ReorderLevel = product.ReorderLevel;
+            dto.ReorderQuantity = product.ReorderQuantity;
+            dto.BulkQuantity = product.BulkQuantity;
+            dto.BulkUnit = product.BulkUnit;
+
+            return dto;
+        }
+
+        public static Product DtoToProduct(this Product product, ProductDto dto)
+        {
+            if (dto == null) throw new ArgumentNullException(nameof(dto));
+            if (product == null) throw new ArgumentNullException(nameof(product));
+
+            product ??= new Product();
+
+            product.Id = ObjectId.Parse(dto.Id);
+            product.CreateDate = dto.CreateDate;
+            product.UpdateDate = dto.UpdateDate;
+            product.CreatedBy = ObjectId.Parse(dto.CreatedBy);
+            product.UpdatedBy = ObjectId.Parse(dto.UpdatedBy);
+            product.DeletedIndicator = dto.DeletedIndicator;
+            product.ShopId = ObjectId.Parse(dto.ShopId);
+            product.Name = dto.Name;
+            product.Description = dto.Description;
+            product.Price = dto.Price;
+            product.Barcode = dto.Barcode;
+            product.CategoryID = ObjectId.Parse(dto.CategoryID);
+            product.SupplierID = ObjectId.Parse(dto.SupplierID);
+            product.StockQuantity = dto.StockQuantity;
+            product.ReorderLevel = dto.ReorderLevel;
+            product.ReorderQuantity = dto.ReorderQuantity;
+            product.BulkQuantity = dto.BulkQuantity;
+            product.BulkUnit = dto.BulkUnit;
+
+            return product;
+        }
+
+
+
 
         public static CompanyEmployee CreateCompanyEmployeeFrom(this EmployeeDetails employeeDetails, string department, string position, ObjectId companyId)
         {

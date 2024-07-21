@@ -1,10 +1,6 @@
-﻿using BackendServices.Models.PrePurchase;
-using MongoDB.Bson.Serialization.Attributes;
-using System;
+﻿using BackendServices.Models.Inventory;
+using BackendServices.Models.PrePurchase;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PrePurchase.Models.PrePurchase
 {
@@ -13,6 +9,8 @@ namespace PrePurchase.Models.PrePurchase
         public UserDto User { get; set; }
 
         public List<ShopDto> Shop { get; set; }
+
+        public List<ProductDto> Products { get; set; }
 
     }
 }
