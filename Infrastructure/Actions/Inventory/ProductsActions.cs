@@ -17,24 +17,24 @@ namespace Infrastructure.Repositories
 {
     public class ProductsActions : IProductsActions
     {
-        private readonly IRepository<Product> _userRepository;
+        private readonly IRepository<Product> _productRepository;
         private readonly ICommon _common;
 
-        public ProductsActions(IRepository<Product> userRepository, ICommon common)
+        public ProductsActions(IRepository<Product> productRepository, ICommon common)
         {
-            _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+            _productRepository = productRepository ?? throw new ArgumentNullException(nameof(productRepository));
             _common = common ?? throw new ArgumentNullException(nameof(common));
         }
 
-        public async Task<Response> GetProducts(string role, string companyId)
+        public async Task<Response> GetProducts(string role, string shopId)
         {
             try
             {
-                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
-                IEnumerable<Product> users = await _userRepository.Find(u => u.ShopId == shop.Id);
-                if (users == null || !users.Any())
-                    throw new HttpResponseException($"No users found for {shop.Name}");
-                return new Response<IEnumerable<Product>>(users);
+                Shop shop = await _common.ValidateCompany<Shop>(role, shopId);
+                IEnumerable<Product> products = await _productRepository.Find(u => u.ShopId == shop.Id);
+                if (products == null || !products.Any())
+                    throw new HttpResponseException($"No products found for {shop.Name}");
+                return new Response<IEnumerable<Product>>(products, HttpStatusCode.OK);
             }
             catch (Exception ex)
             {
@@ -42,23 +42,23 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public async Task<Response> AddProduct(string createdBy, string updatedBy, Product user, string role, string? companyId = null)
+        public async Task<Response> AddProduct(string createdBy, string updatedBy, Product product, string role, string? shopId = null)
         {
             try
             {
-                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
-                Product existingProducts = await _userRepository.FindOne(u => u.Name == user.Name && u.ShopId == shop.Id);
+                Shop shop = await _common.ValidateCompany<Shop>(role, shopId);
+                Product existingProducts = await _productRepository.FindOne(u => u.Name == product.Name && u.ShopId == shop.Id);
                 if (existingProducts != null)
-                    throw new HttpResponseException($"Products with username '{user.Name}' already exists!");
+                    throw new HttpResponseException($"Products with productname '{product.Name}' already exists!");
 
-                user.CreatedBy = ObjectId.Parse(createdBy);
-                user.UpdatedBy = ObjectId.Parse(updatedBy);
-                user.CreateDate = DateTime.UtcNow;
-                user.UpdateDate = DateTime.UtcNow;
-                user.DeletedIndicator = false;
-                user.ShopId = shop.Id;
+                product.CreatedBy = ObjectId.Parse(createdBy);
+                product.UpdatedBy = ObjectId.Parse(updatedBy);
+                product.CreateDate = DateTime.UtcNow;
+                product.UpdateDate = DateTime.UtcNow;
+                product.DeletedIndicator = false;
+                product.ShopId = shop.Id;
 
-                await _userRepository.Insert(user);
+                await _productRepository.Insert(product);
 
                 return new Response(HttpStatusCode.Accepted);
             }
@@ -68,31 +68,31 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public async Task<Response> UpdateProduct(string updatedBy, Product user, string role, string? companyId = null)
+        public async Task<Response> UpdateProduct(string updatedBy, Product product, string role, string? shopId = null)
         {
             try
             {
-                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
-                Product existingProduct = await _userRepository.FindById(user.Id.ToString());
+                Shop shop = await _common.ValidateCompany<Shop>(role, shopId);
+                Product existingProduct = await _productRepository.FindById(product.Id.ToString());
                 if (existingProduct == null || existingProduct.ShopId != shop.Id)
                     throw new HttpResponseException("Products not found");
 
-                existingProduct.Name = user.Name;
-                existingProduct.Description = user.Description;
-                existingProduct.Price = user.Price;
-                existingProduct.Barcode = user.Barcode;
-                existingProduct.CategoryID = user.CategoryID;
-                existingProduct.SupplierID = user.SupplierID;
-                existingProduct.StockQuantity = user.StockQuantity;
-                existingProduct.ReorderLevel = user.ReorderLevel;
-                existingProduct.ReorderQuantity = user.ReorderQuantity;
-                existingProduct.BulkQuantity = user.BulkQuantity;
-                existingProduct.BulkUnit = user.BulkUnit;
+                existingProduct.Name = product.Name;
+                existingProduct.Description = product.Description;
+                existingProduct.Price = product.Price;
+                existingProduct.Barcode = product.Barcode;
+                existingProduct.CategoryID = product.CategoryID;
+                existingProduct.SupplierID = product.SupplierID;
+                existingProduct.StockQuantity = product.StockQuantity;
+                existingProduct.ReorderLevel = product.ReorderLevel;
+                existingProduct.ReorderQuantity = product.ReorderQuantity;
+                existingProduct.BulkQuantity = product.BulkQuantity;
+                existingProduct.BulkUnit = product.BulkUnit;
 
                 existingProduct.UpdatedBy = ObjectId.Parse(updatedBy);
                 existingProduct.UpdateDate = DateTime.UtcNow;
 
-                await _userRepository.Update(existingProduct.Id.ToString(), existingProduct);
+                await _productRepository.Update(existingProduct.Id.ToString(), existingProduct);
 
                 return new Response<Product>(existingProduct);
             }
@@ -102,15 +102,15 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public async Task<Response> GetProduct(string id, string role, string? companyId = null)
+        public async Task<Response> GetProduct(string id, string role, string? shopId = null)
         {
             try
             {
-                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
-                Product user = await _userRepository.FindById(id);
-                if (user == null || user.ShopId != shop.Id)
+                Shop shop = await _common.ValidateCompany<Shop>(role, shopId);
+                Product product = await _productRepository.FindById(id);
+                if (product == null || product.ShopId != shop.Id)
                     throw new HttpResponseException("Products not found");
-                return new Response<Product>(user);
+                return new Response<Product>(product);
             }
             catch (Exception ex)
             {
@@ -118,22 +118,22 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public async Task<Response> SoftDeleteProduct(string updatedBy, string id, string role, string? companyId = null)
+        public async Task<Response> SoftDeleteProduct(string updatedBy, string id, string role, string? shopId = null)
         {
             try
             {
-                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
-                Product user = await _userRepository.FindById(id);
-                if (user == null || user.ShopId != shop.Id)
+                Shop shop = await _common.ValidateCompany<Shop>(role, shopId);
+                Product product = await _productRepository.FindById(id);
+                if (product == null || product.ShopId != shop.Id)
                     throw new HttpResponseException("Products not found");
 
-                user.DeletedIndicator = true;
-                user.UpdatedBy = ObjectId.Parse(updatedBy);
-                user.UpdateDate = DateTime.UtcNow;
+                product.DeletedIndicator = true;
+                product.UpdatedBy = ObjectId.Parse(updatedBy);
+                product.UpdateDate = DateTime.UtcNow;
 
-                await _userRepository.Update(user.Id.ToString(), user);
+                await _productRepository.Update(product.Id.ToString(), product);
 
-                return new Response<Product>(user);
+                return new Response<Product>(product);
             }
             catch (Exception ex)
             {

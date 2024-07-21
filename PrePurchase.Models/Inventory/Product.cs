@@ -18,8 +18,12 @@ namespace PrePurchase.Models.Inventory
         [BsonRequired]
         public DateTime UpdateDate { get; set; }
         [BsonRequired]
+        [JsonConverter(typeof(ObjectIdConverter))]
+
         public ObjectId CreatedBy { get; set; } //Id
         [BsonRequired]
+        [JsonConverter(typeof(ObjectIdConverter))]
+
         public ObjectId UpdatedBy { get; set; }
 
         [BsonRequired]
@@ -27,12 +31,18 @@ namespace PrePurchase.Models.Inventory
 
         // Product Properties
         [BsonRequired]
+        [JsonConverter(typeof(ObjectIdConverter))]
+
         public ObjectId ShopId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public decimal Price { get; set; }
         public string Barcode { get; set; }
+        [JsonConverter(typeof(ObjectIdConverter))]
+
         public ObjectId CategoryID { get; set; } // Foreign Key
+        [JsonConverter(typeof(ObjectIdConverter))]
+
         public ObjectId SupplierID { get; set; } // Foreign Key
         public int StockQuantity { get; set; }
         public int ReorderLevel { get; set; }

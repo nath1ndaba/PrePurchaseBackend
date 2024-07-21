@@ -17,24 +17,24 @@ namespace Infrastructure.Repositories
 {
     public class CategoriesActions : ICategoriesActions
     {
-        private readonly IRepository<Category> _userRepository;
+        private readonly IRepository<Category> _categoryRepository;
         private readonly ICommon _common;
 
-        public CategoriesActions(IRepository<Category> userRepository, ICommon common)
+        public CategoriesActions(IRepository<Category> categoryRepository, ICommon common)
         {
-            _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+            _categoryRepository = categoryRepository ?? throw new ArgumentNullException(nameof(categoryRepository));
             _common = common ?? throw new ArgumentNullException(nameof(common));
         }
 
-        public async Task<Response> GetCategories(string role, string companyId)
+        public async Task<Response> GetCategories(string role, string shopId)
         {
             try
             {
-                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
-                IEnumerable<Category> users = await _userRepository.Find(u => u.ShopId == shop.Id);
-                if (users == null || !users.Any())
-                    throw new HttpResponseException($"No users found for {shop.Name}");
-                return new Response<IEnumerable<Category>>(users);
+                Shop shop = await _common.ValidateCompany<Shop>(role, shopId);
+                IEnumerable<Category> categories = await _categoryRepository.Find(u => u.ShopId == shop.Id);
+                if (categories == null || !categories.Any())
+                    throw new HttpResponseException($"No categories found for {shop.Name}");
+                return new Response<IEnumerable<Category>>(categories);
             }
             catch (Exception ex)
             {
@@ -42,23 +42,42 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public async Task<Response> AddCategory(string createdBy, string updatedBy, Category user, string role, string? companyId = null)
+        public async Task<Response> AddCategory(string createdBy, string updatedBy, Category category, string role, string? shopId = null)
         {
             try
             {
-                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
-                Category existingCategories = await _userRepository.FindOne(u => u.CategoryName == user.CategoryName && u.ShopId == shop.Id);
-                if (existingCategories != null)
-                    throw new HttpResponseException($"Categories with username '{user.CategoryName}' already exists!");
+                Shop shop = await _common.ValidateCompany<Shop>(role, shopId);
+                Category existingCategory = await _categoryRepository.FindOne(u => u.CategoryName == category.CategoryName && u.ShopId == shop.Id);
+                if (existingCategory != null)
+                {
+                    throw new HttpResponseException($"Category with name '{category.CategoryName}' already exists!");
+                }
 
-                user.CreatedBy = ObjectId.Parse(createdBy);
-                user.UpdatedBy = ObjectId.Parse(updatedBy);
-                user.CreateDate = DateTime.UtcNow;
-                user.UpdateDate = DateTime.UtcNow;
-                user.DeletedIndicator = false;
-                user.ShopId = shop.Id;
+                category.CreatedBy = ObjectId.Parse(createdBy);
+                category.UpdatedBy = ObjectId.Parse(updatedBy);
+                category.CreateDate = DateTime.UtcNow;
+                category.UpdateDate = DateTime.UtcNow;
+                category.DeletedIndicator = false;
+                category.ShopId = shop.Id;
 
-                await _userRepository.Insert(user);
+                if (category.Level == 0)
+                {
+                    category.ParentCategoryId = ObjectId.Empty; // Ensure no parent for level 0
+                }
+                else
+                {
+                    if (category.ParentCategoryId == ObjectId.Empty)
+                        throw new HttpResponseException("ParentCategoryId is required for non-top-level categories");
+
+                    var parentCategory = await _categoryRepository.FindById(category.ParentCategoryId.ToString());
+                    if (parentCategory == null)
+                        throw new HttpResponseException("Parent category not found");
+
+                    parentCategory.SubcategoriesIds.Add(category.Id);
+                    await _categoryRepository.Update(parentCategory.Id.ToString(), parentCategory);
+                }
+
+                await _categoryRepository.Insert(category);
 
                 return new Response(HttpStatusCode.Accepted);
             }
@@ -68,21 +87,20 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public async Task<Response> UpdateCategory(string updatedBy, Category user, string role, string? companyId = null)
+        public async Task<Response> UpdateCategory(string updatedBy, Category category, string role, string? shopId = null)
         {
             try
             {
-                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
-                Category existingCategory = await _userRepository.FindById(user.Id.ToString());
+                Shop shop = await _common.ValidateCompany<Shop>(role, shopId);
+                Category existingCategory = await _categoryRepository.FindById(category.Id.ToString());
                 if (existingCategory == null || existingCategory.ShopId != shop.Id)
-                    throw new HttpResponseException("Categories not found");
+                    throw new HttpResponseException("Category not found");
 
-                existingCategory.CategoryName = user.CategoryName;
-
+                existingCategory.CategoryName = category.CategoryName;
                 existingCategory.UpdatedBy = ObjectId.Parse(updatedBy);
                 existingCategory.UpdateDate = DateTime.UtcNow;
 
-                await _userRepository.Update(existingCategory.Id.ToString(), existingCategory);
+                await _categoryRepository.Update(existingCategory.Id.ToString(), existingCategory);
 
                 return new Response<Category>(existingCategory);
             }
@@ -92,15 +110,15 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public async Task<Response> GetCategory(string id, string role, string? companyId = null)
+        public async Task<Response> GetCategory(string id, string role, string? shopId = null)
         {
             try
             {
-                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
-                Category user = await _userRepository.FindById(id);
-                if (user == null || user.ShopId != shop.Id)
-                    throw new HttpResponseException("Categories not found");
-                return new Response<Category>(user);
+                Shop shop = await _common.ValidateCompany<Shop>(role, shopId);
+                Category category = await _categoryRepository.FindById(id);
+                if (category == null || category.ShopId != shop.Id)
+                    throw new HttpResponseException("Category not found");
+                return new Response<Category>(category);
             }
             catch (Exception ex)
             {
@@ -108,28 +126,27 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public async Task<Response> SoftDeleteCategory(string updatedBy, string id, string role, string? companyId = null)
+        public async Task<Response> SoftDeleteCategory(string updatedBy, string id, string role, string? shopId = null)
         {
             try
             {
-                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
-                Category user = await _userRepository.FindById(id);
-                if (user == null || user.ShopId != shop.Id)
-                    throw new HttpResponseException("Categories not found");
+                Shop shop = await _common.ValidateCompany<Shop>(role, shopId);
+                Category category = await _categoryRepository.FindById(id);
+                if (category == null || category.ShopId != shop.Id)
+                    throw new HttpResponseException("Category not found");
 
-                user.DeletedIndicator = true;
-                user.UpdatedBy = ObjectId.Parse(updatedBy);
-                user.UpdateDate = DateTime.UtcNow;
+                category.DeletedIndicator = true;
+                category.UpdatedBy = ObjectId.Parse(updatedBy);
+                category.UpdateDate = DateTime.UtcNow;
 
-                await _userRepository.Update(user.Id.ToString(), user);
+                await _categoryRepository.Update(category.Id.ToString(), category);
 
-                return new Response<Category>(user);
+                return new Response<Category>(category);
             }
             catch (Exception ex)
             {
                 throw new HttpResponseException(ex.Message);
             }
         }
-
     }
 }

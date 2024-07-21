@@ -22,9 +22,13 @@ public class Category
     public DateTime UpdateDate { get; set; }
 
     [BsonRequired]
+    [JsonConverter(typeof(ObjectIdConverter))]
+
     public ObjectId CreatedBy { get; set; }
 
     [BsonRequired]
+    [JsonConverter(typeof(ObjectIdConverter))]
+
     public ObjectId UpdatedBy { get; set; }
 
     [BsonRequired]
@@ -33,8 +37,10 @@ public class Category
     public string CategoryName { get; set; }
 
     [BsonRequired]
-    public ObjectId ShopId { get; set; }
+    [JsonConverter(typeof(ObjectIdConverter))]
 
+    public ObjectId ShopId { get; set; }
+    [JsonConverter(typeof(ObjectIdConverter))]
     public ObjectId ParentCategoryId { get; set; }
 
     public List<ObjectId> SubcategoriesIds { get; set; }
