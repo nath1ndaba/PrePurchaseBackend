@@ -171,7 +171,89 @@ namespace Infrastructure.Helpers
 
             return product;
         }
+        public static RechargeDto DtoFromRecharge(this RechargeDto dto, Recharge recharge)
+        {
+            if (dto == null) throw new ArgumentNullException(nameof(dto));
+            if (recharge == null) throw new ArgumentNullException(nameof(recharge));
 
+            dto.Id = recharge.Id.ToString();
+            dto.CreatedDate = recharge.CreatedDate;
+            dto.CreatedBy = recharge.CreatedBy.ToString();
+            dto.UpdatedDate = recharge.UpdatedDate;
+            dto.UpdatedBy = recharge.UpdatedBy.ToString();
+            dto.DeletedIndicator = recharge.DeletedIndicator;
+            dto.UserId = recharge.UserId.ToString();
+            dto.Amount = recharge.Amount;
+            dto.RechargeDate = recharge.RechargeDate;
+            dto.Status = recharge.Status;
+            dto.PaymentMethod = recharge.PaymentMethod;
+
+            return dto;
+        }
+
+        public static Recharge DtoToRecharge(this Recharge recharge, RechargeDto dto)
+        {
+            if (recharge == null) throw new ArgumentNullException(nameof(recharge));
+            if (dto == null) throw new ArgumentNullException(nameof(dto));
+
+            recharge.Id = ObjectId.Parse(dto.Id);
+            recharge.CreatedDate = dto.CreatedDate;
+            recharge.CreatedBy = ObjectId.Parse(dto.CreatedBy);
+            recharge.UpdatedDate = dto.UpdatedDate;
+            recharge.UpdatedBy = ObjectId.Parse(dto.UpdatedBy);
+            recharge.DeletedIndicator = dto.DeletedIndicator;
+            recharge.UserId = ObjectId.Parse(dto.UserId);
+            recharge.Amount = dto.Amount;
+            recharge.RechargeDate = dto.RechargeDate;
+            recharge.Status = dto.Status;
+            recharge.PaymentMethod = dto.PaymentMethod;
+
+            return recharge;
+        }
+
+        public static UserAccountDto DtoFromUserAccount(this UserAccountDto dto, UserAccount userAccount)
+        {
+            if (dto == null) throw new ArgumentNullException(nameof(dto));
+            if (userAccount == null) throw new ArgumentNullException(nameof(userAccount));
+
+            dto.Id = userAccount.Id.ToString();
+            dto.CreatedDate = userAccount.CreatedDate;
+            dto.CreatedBy = userAccount.CreatedBy.ToString();
+            dto.UpdatedDate = userAccount.UpdatedDate;
+            dto.UpdatedBy = userAccount.UpdatedBy.ToString();
+            dto.DeletedIndicator = userAccount.DeletedIndicator;
+            dto.UserId = userAccount.UserId.ToString();
+            dto.AmountBalance = userAccount.AmountBalance;
+            dto.ItemsBalances = userAccount.ItemsBalances?.ConvertAll(ib => new ItemBalanceDto
+            {
+                Balance = ib.Balance,
+                ItemId = ib.ItemId.ToString()
+            });
+
+            return dto;
+        }
+
+        public static UserAccount DtoToUserAccount(this UserAccount userAccount, UserAccountDto dto)
+        {
+            if (userAccount == null) throw new ArgumentNullException(nameof(userAccount));
+            if (dto == null) throw new ArgumentNullException(nameof(dto));
+
+            userAccount.Id = ObjectId.Parse(dto.Id);
+            userAccount.CreatedDate = dto.CreatedDate;
+            userAccount.CreatedBy = ObjectId.Parse(dto.CreatedBy);
+            userAccount.UpdatedDate = dto.UpdatedDate;
+            userAccount.UpdatedBy = ObjectId.Parse(dto.UpdatedBy);
+            userAccount.DeletedIndicator = dto.DeletedIndicator;
+            userAccount.UserId = ObjectId.Parse(dto.UserId);
+            userAccount.AmountBalance = dto.AmountBalance;
+            userAccount.ItemsBalances = dto.ItemsBalances?.ConvertAll(ibDto => new ItemBalance
+            {
+                Balance = ibDto.Balance,
+                ItemId = ObjectId.Parse(ibDto.ItemId)
+            });
+
+            return userAccount;
+        }
 
 
 

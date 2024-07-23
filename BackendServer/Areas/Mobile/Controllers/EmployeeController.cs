@@ -19,14 +19,14 @@ namespace BackendServer.V1.Controllers
     [Consumes("application/json")]
     [Area("api/v1")]
     [Route("[area]/[controller]")]
-    [Authorize(Roles = AuthRoles.Employee)]
+    [Authorize(Roles = AuthRoles.User)]
     [ApiController]
     public class EmployeeController : BaseController
     {
         private readonly IEmployeeActions actions;
 
-        protected string EmployeeId
-            => User.FindFirstValue(PrePurchaseJwtConstants.EmployeeId);
+        protected string UserId
+            => User.FindFirstValue(PrePurchaseJwtConstants.UserId);
 
         public EmployeeController(
             IAuthContainerModel containerModel
@@ -72,7 +72,7 @@ namespace BackendServer.V1.Controllers
         [ProducesResponseType(typeof(Response), 200)]
         public async Task<Response> ClockInOut([FromBody] ClockInAndOutData clockInData)
         {
-            return await actions.ClockInOut(clockInData, EmployeeId, Id);
+            return await actions.ClockInOut(clockInData, UserId, Id);
         }
 
         [HttpGet("GetClockedInStatus")]
@@ -123,14 +123,14 @@ namespace BackendServer.V1.Controllers
         {
             string createdBy = User.FindFirstValue(ClaimTypes.Name);
             string updatedBy = createdBy;
-            return await actions.RequestLoan(createdBy, updatedBy, model, EmployeeId, companyId);
+            return await actions.RequestLoan(createdBy, updatedBy, model, UserId, companyId);
         }
 
         [HttpDelete("loan/{loanId}")]
         [ProducesResponseType(typeof(Response), 200)]
         public async Task<Response> RemoveLoan([FromQuery][Required] string companyId, [FromRoute][Required] string loanId)
         {
-            return await actions.RemoveLoan(companyId, loanId, EmployeeId);
+            return await actions.RemoveLoan(companyId, loanId, UserId);
         }
 
         [HttpGet("loan")]
@@ -173,7 +173,7 @@ namespace BackendServer.V1.Controllers
             LeaveStatus status = LeaveStatus.New;
             string createdBy = User.FindFirstValue(ClaimTypes.Name);
             string updatedBy = createdBy;
-            return await actions.RequestLeave(createdBy, updatedBy, status, model, EmployeeId, companyId);
+            return await actions.RequestLeave(createdBy, updatedBy, status, model, UserId, companyId);
         }
 
         [HttpDelete("leave/{leaveId}")]
@@ -181,7 +181,7 @@ namespace BackendServer.V1.Controllers
         public async Task<Response> RemoveLeave([FromQuery][Required] string companyId, [FromRoute][Required] string leaveId)
         {
             string updatedBy = User.FindFirstValue(ClaimTypes.Name);
-            return await actions.RemoveLeave(updatedBy, companyId, leaveId, EmployeeId);
+            return await actions.RemoveLeave(updatedBy, companyId, leaveId, UserId);
         }
 
         [HttpGet("leave")]
@@ -195,14 +195,14 @@ namespace BackendServer.V1.Controllers
         [ProducesResponseType(typeof(Response<IDictionary<string, List<EmployeeTask>>>), 200)]
         public async Task<Response> GetRosta([FromRoute][Required] string companyId)
         {
-            return await actions.Rosta(EmployeeId, companyId);
+            return await actions.Rosta(UserId, companyId);
         }
 
         [HttpGet("companyProfiles")]
         [ProducesResponseType(typeof(Response<List<CompanyEmployeeProfile>>), 200)]
         public async Task<Response> GetCompnayProfiles()
         {
-            return await actions.CompanyProfiles(EmployeeId);
+            return await actions.CompanyProfiles(UserId);
         }
 
         [HttpGet("timeSummaries")]
@@ -229,9 +229,9 @@ namespace BackendServer.V1.Controllers
         private Task<JwtTokenModel> GetAuthTokens(EmployeeDetails employee)
         {
             Claim[] claims = {
-                new(ClaimTypes.Role, AuthRoles.Employee)
+                new(ClaimTypes.Role, AuthRoles.User)
                 , new(JwtRegisteredClaimNames.UniqueName, employee.Id.ToString())
-            , new(PrePurchaseJwtConstants.EmployeeId, employee.EmployeeId)};
+            , new(PrePurchaseJwtConstants.UserId, employee.EmployeeId)};
 
             return GetAuthTokens(claims);
         }

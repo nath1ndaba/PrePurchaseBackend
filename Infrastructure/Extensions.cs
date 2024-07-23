@@ -151,6 +151,7 @@ namespace Infrastructure
             services.AddScoped<IShopActions, ShopActions>();
             services.AddScoped<IUserActions, UserActions>();
             services.AddScoped<IUserLoginActions, UserLoginActions>();
+            services.AddScoped<IRechargeAccountActions, RechargeAccountActions>();
 
             return services;
         }

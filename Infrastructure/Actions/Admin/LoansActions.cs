@@ -22,7 +22,7 @@ namespace Infrastructure.Actions.Admin
 
                 if (ObjectId.TryParse(companyid, out var _companyId) is false)
                     throw new HttpResponseException("Invalid companyId!!");
-                Company company = await _common.ValidateCompany<Company>(role, companyid);
+                Company company = await _common.ValidateOwner<Company>(role, companyid);
 
                 // check that this employee works for the company they are requesting a loan from
                 employeeId = employeeId.ToLowerInvariant();
@@ -82,7 +82,7 @@ namespace Infrastructure.Actions.Admin
         {
             try
             {
-                Company company = await _common.ValidateCompany<Company>(role, model.CompanyId);
+                Company company = await _common.ValidateOwner<Company>(role, model.CompanyId);
 
                 if (company!.IsLoanActive is true)
                 {
@@ -104,7 +104,7 @@ namespace Infrastructure.Actions.Admin
         {
             try
             {
-                Company company = await _common.ValidateCompany<Company>(role, companyid);
+                Company company = await _common.ValidateOwner<Company>(role, companyid);
 
                 if (company!.IsLoanActive is true)
                 {

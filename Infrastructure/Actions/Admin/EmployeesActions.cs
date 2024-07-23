@@ -21,7 +21,7 @@ namespace Infrastructure.Actions.Admin
         {
             if (ObjectId.TryParse(companyid, out var _companyId) is false)
                 throw new HttpResponseException("Invalid companyId!!");
-            Company company = await _common.ValidateCompany<Company>(role, companyid);
+            Company company = await _common.ValidateOwner<Company>(role, companyid);
             IEnumerable<CompanyEmployee> employees = await _companyEmployees.Find(x => x.CompanyId == company.Id && x.DeletedIndicator == false);
 
             Dictionary<ObjectId, Shift> companyShiftsMapped = company.Shifts.MapUnique(x => x.Id);
@@ -36,7 +36,7 @@ namespace Infrastructure.Actions.Admin
         {
             if (ObjectId.TryParse(companyid, out var _companyId) is false)
                 throw new HttpResponseException("Invalid companyId!!");
-            Company company = await _common.ValidateCompany<Company>(role, companyid);
+            Company company = await _common.ValidateOwner<Company>(role, companyid);
             IEnumerable<CompanyEmployee> employees = await _companyEmployees.Find(x => x.CompanyId == company.Id && x.DeletedIndicator == true);
 
             Dictionary<ObjectId, Shift> companyShiftsMapped = company.Shifts.MapUnique(x => x.Id);
@@ -51,7 +51,7 @@ namespace Infrastructure.Actions.Admin
         {
             if (ObjectId.TryParse(companyid, out var _companyId) is false)
                 throw new HttpResponseException("Invalid companyId!!");
-            Company company = await _common.ValidateCompany<Company>(role, companyid);
+            Company company = await _common.ValidateOwner<Company>(role, companyid);
 
             department = department.ToLowerInvariant();
             IEnumerable<CompanyEmployee> _employees = await _companyEmployees.Find(x => x.CompanyId == company.Id && x.Department.ToLowerInvariant() == department);
@@ -69,7 +69,7 @@ namespace Infrastructure.Actions.Admin
 
             if (ObjectId.TryParse(companyid, out var _companyId) is false)
                 throw new HttpResponseException("Invalid companyId!!");
-            Company company = await _common.ValidateCompany<Company>(role, companyid);
+            Company company = await _common.ValidateOwner<Company>(role, companyid);
 
             AddEmployeeModel model_or = model;
             model = model.Sanitize();
@@ -96,7 +96,7 @@ namespace Infrastructure.Actions.Admin
 
             if (ObjectId.TryParse(companyId, out var _companyId) is false)
                 throw new HttpResponseException("Invalid companyId!!");
-            Company company = await _common.ValidateCompany<Company>(role, companyId);
+            Company company = await _common.ValidateOwner<Company>(role, companyId);
 
             EmployeeDetails myemployee = await _employees.FindOne(x => x.EmployeeId.ToLower().Contains(employeeId.ToLower().Trim()));
             CompanyEmployee? employee = await _companyEmployees.FindOne(x => x.EmployeeId.ToLower().Contains(employeeId.ToLower().Trim()) && x.CompanyId == company.Id);

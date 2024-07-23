@@ -29,7 +29,7 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
+                Shop shop = await _common.ValidateOwner<Shop>(role, companyId);
                 IEnumerable<Supplier> suppliers = await _supplierRepository.Find(u => u.ShopId == shop.Id);
                 if (suppliers == null || !suppliers.Any())
                     throw new HttpResponseException($"No suppliers found for {shop.Name}");
@@ -45,7 +45,7 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
+                Shop shop = await _common.ValidateOwner<Shop>(role, companyId);
                 Supplier existingSuppliers = await _supplierRepository.FindOne(u => u.SupplierName == supplier.SupplierName && u.ShopId == shop.Id);
                 if (existingSuppliers != null)
                     throw new HttpResponseException($"Suppliers with suppliername '{supplier.SupplierName}' already exists!");
@@ -71,7 +71,7 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
+                Shop shop = await _common.ValidateOwner<Shop>(role, companyId);
                 Supplier existingSupplier = await _supplierRepository.FindById(supplier.Id.ToString());
                 if (existingSupplier == null || existingSupplier.ShopId != shop.Id)
                     throw new HttpResponseException("Suppliers not found");
@@ -99,7 +99,7 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
+                Shop shop = await _common.ValidateOwner<Shop>(role, companyId);
                 Supplier supplier = await _supplierRepository.FindById(id);
                 if (supplier == null || supplier.ShopId != shop.Id)
                     throw new HttpResponseException("Suppliers not found");
@@ -115,7 +115,7 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
+                Shop shop = await _common.ValidateOwner<Shop>(role, companyId);
                 Supplier supplier = await _supplierRepository.FindById(id);
                 if (supplier == null || supplier.ShopId != shop.Id)
                     throw new HttpResponseException("Suppliers not found");

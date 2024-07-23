@@ -3,6 +3,8 @@ using BackendServices.Actions.Inventory;
 using BackendServices.Exceptions;
 using BackendServices.JWT;
 using BackendServices.Models;
+using BackendServices.Models.Inventory;
+using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PrePurchase.Models;
@@ -35,7 +37,7 @@ namespace BackendServer.V1.Controllers
 
         [HttpPost]
         [ProducesResponseType(typeof(Response<Product>), 200)]
-        public async Task<Response> AddProduct([FromBody] Product model, [FromQuery] string shopId = null)
+        public async Task<Response> AddProduct([FromBody] ProductDto model, [FromQuery] string shopId = null)
         {
             RequireProductId(shopId);
             string createdBy = User.FindFirstValue(ClaimTypes.Name);

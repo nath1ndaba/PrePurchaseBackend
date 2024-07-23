@@ -2,6 +2,8 @@
 using BackendServices.Actions.Inventory;
 using BackendServices.Exceptions;
 using BackendServices.Models;
+using BackendServices.Models.Inventory;
+using Infrastructure.Helpers;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using PrePurchase.Models;
@@ -30,7 +32,7 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Shop shop = await _common.ValidateCompany<Shop>(role, shopId);
+                Shop shop = await _common.ValidateOwner<Shop>(role, shopId);
                 IEnumerable<Product> products = await _productRepository.Find(u => u.ShopId == shop.Id);
                 if (products == null || !products.Any())
                     throw new HttpResponseException($"No products found for {shop.Name}");
@@ -45,7 +47,7 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Shop shop = await _common.ValidateCompany<Shop>(role, shopId);
+                Shop shop = await _common.ValidateOwner<Shop>(role, shopId);
                 IEnumerable<Product> products = await _productRepository.Find(x => x.ShopId == shop.Id && x.CategoryID == ObjectId.Parse(categoryId));
                 if (products == null || !products.Any())
                     throw new HttpResponseException($"No products found for {shop.Name}");
@@ -57,21 +59,24 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public async Task<Response> AddProduct(string createdBy, string updatedBy, Product product, string role, string? shopId = null)
+        public async Task<Response> AddProduct(string createdBy, string updatedBy, ProductDto model, string role, string? shopId = null)
         {
             try
             {
-                Shop shop = await _common.ValidateCompany<Shop>(role, shopId);
-                Product existingProducts = await _productRepository.FindOne(u => u.Name == product.Name && u.ShopId == shop.Id);
+                Shop shop = await _common.ValidateOwner<Shop>(role, shopId);
+                Product existingProducts = await _productRepository.FindOne(u => u.Name == model.Name && u.ShopId == shop.Id);
                 if (existingProducts != null)
-                    throw new HttpResponseException($"Products with productname '{product.Name}' already exists!");
+                    throw new HttpResponseException($"Products with productname '{model.Name}' already exists!");
 
-                product.CreatedBy = ObjectId.Parse(createdBy);
-                product.UpdatedBy = ObjectId.Parse(updatedBy);
-                product.CreateDate = DateTime.UtcNow;
-                product.UpdateDate = DateTime.UtcNow;
-                product.DeletedIndicator = false;
-                product.ShopId = shop.Id;
+                model.CreatedBy = createdBy;
+                model.UpdatedBy = updatedBy;
+                model.CreateDate = DateTime.UtcNow;
+                model.UpdateDate = DateTime.UtcNow;
+                model.DeletedIndicator = false;
+                model.ShopId = shop.Id.ToString();
+
+                Product product = new Product();
+                product.DtoToProduct(model);
 
                 await _productRepository.Insert(product);
 
@@ -87,7 +92,7 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Shop shop = await _common.ValidateCompany<Shop>(role, shopId);
+                Shop shop = await _common.ValidateOwner<Shop>(role, shopId);
                 Product existingProduct = await _productRepository.FindById(product.Id.ToString());
                 if (existingProduct == null || existingProduct.ShopId != shop.Id)
                     throw new HttpResponseException("Products not found");
@@ -121,7 +126,7 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Shop shop = await _common.ValidateCompany<Shop>(role, shopId);
+                Shop shop = await _common.ValidateOwner<Shop>(role, shopId);
                 Product product = await _productRepository.FindById(id);
                 if (product == null || product.ShopId != shop.Id)
                     throw new HttpResponseException("Products not found");
@@ -137,7 +142,7 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Shop shop = await _common.ValidateCompany<Shop>(role, shopId);
+                Shop shop = await _common.ValidateOwner<Shop>(role, shopId);
                 Product product = await _productRepository.FindById(id);
                 if (product == null || product.ShopId != shop.Id)
                     throw new HttpResponseException("Products not found");

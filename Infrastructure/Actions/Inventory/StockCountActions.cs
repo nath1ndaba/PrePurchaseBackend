@@ -30,7 +30,7 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
+                Shop shop = await _common.ValidateOwner<Shop>(role, companyId);
                 IEnumerable<StockCount> stockCounts = await _stockCountRepository.Find(u => u.ShopId == shop.Id);
                 if (stockCounts == null || !stockCounts.Any())
                     throw new HttpResponseException($"No stockCounts found for {shop.Name}");
@@ -46,7 +46,7 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
+                Shop shop = await _common.ValidateOwner<Shop>(role, companyId);
                 StockCount existingStockCounts = await _stockCountRepository.FindOne(u => u.ProductID == stockCount.ProductID && u.ShopId == shop.Id);
                 if (existingStockCounts != null)
                     throw new HttpResponseException($"StockCounts with id '{stockCount.Id}' already exists!");
@@ -72,7 +72,7 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
+                Shop shop = await _common.ValidateOwner<Shop>(role, companyId);
                 StockCount existingStockCount = await _stockCountRepository.FindById(stockCount.Id.ToString());
                 if (existingStockCount == null || existingStockCount.ShopId != shop.Id)
                     throw new HttpResponseException("Stock Count not found");
@@ -99,7 +99,7 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
+                Shop shop = await _common.ValidateOwner<Shop>(role, companyId);
                 StockCount stockCount = await _stockCountRepository.FindById(id);
                 if (stockCount == null || stockCount.ShopId != shop.Id)
                     throw new HttpResponseException("StockCounts not found");
@@ -115,7 +115,7 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
+                Shop shop = await _common.ValidateOwner<Shop>(role, companyId);
                 StockCount stockCount = await _stockCountRepository.FindById(id);
                 if (stockCount == null || stockCount.ShopId != shop.Id)
                     throw new HttpResponseException("StockCounts not found");

@@ -80,7 +80,7 @@ namespace Infrastructure.Actions.Admin
 
         public async Task<Response> GetprocessedTimesSummaries(string role, string? companyid = null)
         {
-            Company company = await _common.ValidateCompany<Company>(role, companyid);
+            Company company = await _common.ValidateOwner<Company>(role, companyid);
 
             IEnumerable<ProcessedTimesSummary> times = await _processedTimesSummary.Find(x => x.CompanyId == company.Id && x.DeletedIndicator == false);
 
@@ -90,7 +90,7 @@ namespace Infrastructure.Actions.Admin
 
         public async Task<Response> GetProcessedTimesSummariesBatch(string role, string batchCode, string? companyid = null)
         {
-            Company company = await _common.ValidateCompany<Company>(role, companyid);
+            Company company = await _common.ValidateOwner<Company>(role, companyid);
 
             ProcessedTimesSummary? times = await _processedTimesSummary.FindOne(x => x.CompanyId == company.Id && x.HistoryBatchCode == batchCode);
 
@@ -99,7 +99,7 @@ namespace Infrastructure.Actions.Admin
 
         public async Task<Response> UndoProcessedTimesSummariesBatch(string updatedBy, string role, string batchCode, string? companyid = null)
         {
-            Company company = await _common.ValidateCompany<Company>(role, companyid);
+            Company company = await _common.ValidateOwner<Company>(role, companyid);
 
             ProcessedTimesSummary? times = await _processedTimesSummary.FindOne(x => x.CompanyId == company.Id && x.HistoryBatchCode == batchCode);
 
@@ -453,7 +453,7 @@ namespace Infrastructure.Actions.Admin
         public async Task<Response> UpdateProcessedPayrollBatch(string updatedBy, string role, string BatchCode, List<AdjustedValuesOnPay> valuesOnPay, string AdminWhoUpdated, string? companyId = null)
         {
             //TODO: Currently only updating valuesOnPay, To find a way or updating data that gets passed to pitch
-            Company company = await _common.ValidateCompany<Company>(role, companyId);
+            Company company = await _common.ValidateOwner<Company>(role, companyId);
 
 
             IEnumerable<History> HistoriesToBeAdjusted = await _histories.Find(x => x.BatchCode == BatchCode && x.CompanyId == company.Id);
@@ -528,7 +528,7 @@ namespace Infrastructure.Actions.Admin
 
         public async Task<Response> GetPayrolBatchHistory(string role, string? companyId = null)
         {
-            Company company = await _common.ValidateCompany<Company>(role, companyId);
+            Company company = await _common.ValidateOwner<Company>(role, companyId);
 
 
             //TO-Do: add paramaters so you can page or skip and limit
@@ -558,7 +558,7 @@ namespace Infrastructure.Actions.Admin
         private List<ClockData> AmendedListOfClocks = new();
         public async Task<Response> AmendClockings(string updatedBy, List<AmendClocks> orderedUpdatedNewTimes, string employeeId, string role, string? companyId = null)
         {
-            Company company = await _common.ValidateCompany<Company>(role, companyId);
+            Company company = await _common.ValidateOwner<Company>(role, companyId);
 
             AmendedListOfClocks.Clear();
 
@@ -614,7 +614,7 @@ namespace Infrastructure.Actions.Admin
         private readonly List<ClockData> OverrideListOfClocks = new();
         public async Task<Response> OverrideClockings(string updatedBy, string employeeId, string role, string? companyId = null)
         {
-            Company company = await _common.ValidateCompany<Company>(role, companyId);
+            Company company = await _common.ValidateOwner<Company>(role, companyId);
 
 
             // get the time summary that is recording this employee's data
@@ -636,7 +636,7 @@ namespace Infrastructure.Actions.Admin
 
         public async Task<Response> OverrideAllClockings(string updatedBy, string role, string? companyId = null)
         {
-            Company company = await _common.ValidateCompany<Company>(role, companyId);
+            Company company = await _common.ValidateOwner<Company>(role, companyId);
 
             // get the time summary that is recording this employee's data
             IEnumerable<TimeSummary> CompanyTimes = await _timeSummaries.Find(x => x.CompanyId == company.Id);
@@ -666,7 +666,7 @@ namespace Infrastructure.Actions.Admin
 
         public async Task<Response> TimeSummariesByCompanyId(string role, string companyId)
         {
-            Company company = await _common.ValidateCompany<Company>(role, companyId);
+            Company company = await _common.ValidateOwner<Company>(role, companyId);
 
             IEnumerable<TimeSummary> result = await _timeSummaries.Find(x => x.CompanyId == company.Id);
             return new Response<IEnumerable<TimeSummary>>(result);
@@ -674,7 +674,7 @@ namespace Infrastructure.Actions.Admin
 
         public async Task<Response> TimeSummariesForRangeByCompanyId(string role, TimeSummariesForRangeModel model)
         {
-            Company company = await _common.ValidateCompany<Company>(role, model.CompanyId);
+            Company company = await _common.ValidateOwner<Company>(role, model.CompanyId);
 
             DateTime startDate = new DateTime(model.StartDate.Year, model.StartDate.Month, model.StartDate.Day, 0, 0, 0);
             DateTime endDate = model.EndDate.Hour == 0 ? model.EndDate.AddHours(23).AddMinutes(59).AddSeconds(59) : model.EndDate;
@@ -703,7 +703,7 @@ namespace Infrastructure.Actions.Admin
             if (model is null) throw new HttpResponseException($"{nameof(model)} can not be null");
             if (model.DaysToTake <= 0) throw new HttpResponseException($"Please porvide days more than zero");
 
-            Company company = await _common.ValidateCompany<Company>(role, companyId);
+            Company company = await _common.ValidateOwner<Company>(role, companyId);
 
             Response leave = await _employeeActions.RequestLeave(createdBy, updatedBy, LeaveStatus.Accepted, model, employeeId, companyId);
             if (leave.StatusCode is HttpStatusCode.Created)

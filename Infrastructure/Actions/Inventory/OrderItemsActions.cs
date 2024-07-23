@@ -30,7 +30,7 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
+                Shop shop = await _common.ValidateOwner<Shop>(role, companyId);
                 IEnumerable<OrderItem> orderItems = await _orderItemsRepository.Find(u => u.ShopId == shop.Id);
                 if (orderItems == null || !orderItems.Any())
                     throw new HttpResponseException($"No orderItems found for {shop.Name}");
@@ -46,7 +46,7 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
+                Shop shop = await _common.ValidateOwner<Shop>(role, companyId);
                 OrderItem existingOrderItems = await _orderItemsRepository.FindOne(u => u.OrderID == orderItems.OrderID && u.ShopId == shop.Id);
                 if (existingOrderItems != null)
                     throw new HttpResponseException($"OrderItems with id '{orderItems.OrderID}' already exists!");
@@ -72,7 +72,7 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
+                Shop shop = await _common.ValidateOwner<Shop>(role, companyId);
                 OrderItem existingOrderItem = await _orderItemsRepository.FindById(orderItems.Id.ToString());
                 if (existingOrderItem == null || existingOrderItem.ShopId != shop.Id)
                     throw new HttpResponseException("OrderItems not found");
@@ -98,7 +98,7 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
+                Shop shop = await _common.ValidateOwner<Shop>(role, companyId);
                 OrderItem orderItems = await _orderItemsRepository.FindById(id);
                 if (orderItems == null || orderItems.ShopId != shop.Id)
                     throw new HttpResponseException("OrderItems not found");
@@ -114,7 +114,7 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
+                Shop shop = await _common.ValidateOwner<Shop>(role, companyId);
                 OrderItem orderItems = await _orderItemsRepository.FindById(id);
                 if (orderItems == null || orderItems.ShopId != shop.Id)
                     throw new HttpResponseException("OrderItems not found");

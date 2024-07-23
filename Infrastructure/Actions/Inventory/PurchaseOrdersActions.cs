@@ -30,7 +30,7 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
+                Shop shop = await _common.ValidateOwner<Shop>(role, companyId);
                 IEnumerable<PurchaseOrder> purchaseOrderss = await _purchaseOrdersRepository.Find(u => u.ShopId == shop.Id);
                 if (purchaseOrderss == null || !purchaseOrderss.Any())
                     throw new HttpResponseException($"No purchaseOrderss found for {shop.Name}");
@@ -46,7 +46,7 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
+                Shop shop = await _common.ValidateOwner<Shop>(role, companyId);
                 PurchaseOrder existingPurchaseOrders = await _purchaseOrdersRepository.FindOne(u => u.PurchaseOrderNumber == purchaseOrders.PurchaseOrderNumber && u.ShopId == shop.Id);
                 if (existingPurchaseOrders != null)
                     throw new HttpResponseException($"PurchaseOrders with id '{purchaseOrders.Id}' already exists!");
@@ -72,7 +72,7 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
+                Shop shop = await _common.ValidateOwner<Shop>(role, companyId);
                 PurchaseOrder existingPurchaseOrder = await _purchaseOrdersRepository.FindById(purchaseOrders.Id.ToString());
                 if (existingPurchaseOrder == null || existingPurchaseOrder.ShopId != shop.Id)
                     throw new HttpResponseException("PurchaseOrders not found");
@@ -98,7 +98,7 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
+                Shop shop = await _common.ValidateOwner<Shop>(role, companyId);
                 PurchaseOrder purchaseOrders = await _purchaseOrdersRepository.FindById(id);
                 if (purchaseOrders == null || purchaseOrders.ShopId != shop.Id)
                     throw new HttpResponseException("PurchaseOrder not found");
@@ -114,7 +114,7 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Shop shop = await _common.ValidateCompany<Shop>(role, companyId);
+                Shop shop = await _common.ValidateOwner<Shop>(role, companyId);
                 PurchaseOrder purchaseOrders = await _purchaseOrdersRepository.FindById(id);
                 if (purchaseOrders == null || purchaseOrders.ShopId != shop.Id)
                     throw new HttpResponseException("PurchaseOrders not found");

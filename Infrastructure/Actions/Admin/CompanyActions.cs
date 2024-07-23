@@ -39,7 +39,7 @@ namespace Infrastructure.Actions.Admin
         {
             try
             {
-                Company company = await _common.ValidateCompany<Company>(role, companyId);
+                Company company = await _common.ValidateOwner<Company>(role, companyId);
                 return new Response<Company>(company);
             }
             catch
@@ -53,7 +53,7 @@ namespace Infrastructure.Actions.Admin
         {
             try
             {
-                Company company = await _common.ValidateCompany<Company>(role, companyId);
+                Company company = await _common.ValidateOwner<Company>(role, companyId);
 
                 company.Update(update);
 
@@ -74,7 +74,7 @@ namespace Infrastructure.Actions.Admin
         {
             try
             {
-                Company company = await _common.ValidateCompany<Company>(role, companyId);
+                Company company = await _common.ValidateOwner<Company>(role, companyId);
 
                 List<Location>? listOfCurrentSites = company?.Address?.ListOfSitesPerCompany ?? new List<Location>();
                 listOfCurrentSites.Add(location);
@@ -94,7 +94,7 @@ namespace Infrastructure.Actions.Admin
         {
             try
             {
-                Company company = await _common.ValidateCompany<Company>(role, companyId);
+                Company company = await _common.ValidateOwner<Company>(role, companyId);
 
                 position = position.Trim();
 
@@ -118,7 +118,7 @@ namespace Infrastructure.Actions.Admin
         {
             try
             {
-                Company company = await _common.ValidateCompany<Company>(role, companyId);
+                Company company = await _common.ValidateOwner<Company>(role, companyId);
 
                 int index = company.Positions.FindIndex(x => x == position);
 
@@ -143,7 +143,7 @@ namespace Infrastructure.Actions.Admin
 
             try
             {
-                Company company = await _common.ValidateCompany<Company>(role, companyId);
+                Company company = await _common.ValidateOwner<Company>(role, companyId);
 
                 if (company.Shifts.Any(x => x.Name == model.Name))
                     throw new HttpResponseException(new Response(HttpStatusCode.Conflict, error: $@"A shift with name ""{model.Name}"" already exists!"));
@@ -167,7 +167,7 @@ namespace Infrastructure.Actions.Admin
         {
             try
             {
-                Company company = await _common.ValidateCompany<Company>(role, companyId);
+                Company company = await _common.ValidateOwner<Company>(role, companyId);
 
                 int index = company.Shifts.FindIndex(x => x.Id == ObjectId.Parse(shiftId));
 
@@ -191,7 +191,7 @@ namespace Infrastructure.Actions.Admin
         {
             try
             {
-                Company company = await _common.ValidateCompany<Company>(role, companyId);
+                Company company = await _common.ValidateOwner<Company>(role, companyId);
 
                 Shift? toEdit = company.Shifts.Find(x => x.Id == ObjectId.Parse(id));
                 Shift updateShift = model.ToShift();
@@ -218,7 +218,7 @@ namespace Infrastructure.Actions.Admin
         {
             try
             {
-                Company company = await _common.ValidateCompany<Company>(role, companyId);
+                Company company = await _common.ValidateOwner<Company>(role, companyId);
 
                 if (company.Rates.Any(x => x.NameOfPosition.Trim() == model.NameOfPosition))
                     throw new HttpResponseException(new Response(HttpStatusCode.Conflict, error: @$"A rate for position ""{model.NameOfPosition}"" already exists!"));
@@ -244,7 +244,7 @@ namespace Infrastructure.Actions.Admin
         {
             try
             {
-                Company company = await _common.ValidateCompany<Company>(role, companyId);
+                Company company = await _common.ValidateOwner<Company>(role, companyId);
 
                 int index = company.Rates.FindIndex(x => x.Id == ObjectId.Parse(id));
 
@@ -269,7 +269,7 @@ namespace Infrastructure.Actions.Admin
             try
             {
 
-                Company company = await _common.ValidateCompany<Company>(role, companyId);
+                Company company = await _common.ValidateOwner<Company>(role, companyId);
 
                 Deduction deduction = model.ToDeduction();
                 if (company.Deductions.Any(x => x.TypeOfDeduction.Trim() == deduction.TypeOfDeduction))
@@ -290,7 +290,7 @@ namespace Infrastructure.Actions.Admin
         {
             try
             {
-                Company company = await _common.ValidateCompany<Company>(role, companyId);
+                Company company = await _common.ValidateOwner<Company>(role, companyId);
 
                 Deduction? toEdit = company.Deductions.Find(x => x.Id == ObjectId.Parse(id));
                 Deduction updatedDeduction = model.ToDeduction();
@@ -316,7 +316,7 @@ namespace Infrastructure.Actions.Admin
         {
             try
             {
-                Company company = await _common.ValidateCompany<Company>(role, companyId);
+                Company company = await _common.ValidateOwner<Company>(role, companyId);
 
                 int index = company.Deductions.FindIndex(x => x.Id == ObjectId.Parse(id));
 
@@ -340,7 +340,7 @@ namespace Infrastructure.Actions.Admin
         {
             try
             {
-                Company company = await _common.ValidateCompany<Company>(role, companyId);
+                Company company = await _common.ValidateOwner<Company>(role, companyId);
 
                 Rate? toEdit = company.Rates.Find(x => x.Id == ObjectId.Parse(id));
                 Rate updatedRate = model.ToRate();

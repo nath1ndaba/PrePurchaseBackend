@@ -17,7 +17,7 @@ namespace Infrastructure.Actions.Admin
 
             try
             {
-                Company company = await _common.ValidateCompany<Company>(role, companyId);
+                Company company = await _common.ValidateOwner<Company>(role, companyId);
 
                 department = department.Trim();
                 if (company.Departments.Contains(department))
@@ -37,7 +37,7 @@ namespace Infrastructure.Actions.Admin
         {
             try
             {
-                Company company = await _common.ValidateCompany<Company>(role, companyId);
+                Company company = await _common.ValidateOwner<Company>(role, companyId);
                 List<string> departments = company.Departments;
 
                 return new Response<List<string>>(departments);
@@ -53,7 +53,7 @@ namespace Infrastructure.Actions.Admin
         {
             try
             {
-                Company company = await _common.ValidateCompany<Company>(role, companyId);
+                Company company = await _common.ValidateOwner<Company>(role, companyId);
 
                 int index = company.Departments.FindIndex(x => x == department);
 

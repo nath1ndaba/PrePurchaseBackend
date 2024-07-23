@@ -30,7 +30,7 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Shop shop = await _common.ValidateCompany<Shop>(role, shopId);
+                Shop shop = await _common.ValidateOwner<Shop>(role, shopId);
                 IEnumerable<Category> categories = await _categoryRepository.Find(u => u.ShopId == shop.Id);
                 if (categories == null || !categories.Any())
                     throw new HttpResponseException($"No categories found for {shop.Name}");
@@ -46,7 +46,7 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Shop shop = await _common.ValidateCompany<Shop>(role, shopId);
+                Shop shop = await _common.ValidateOwner<Shop>(role, shopId);
                 Category existingCategory = await _categoryRepository.FindOne(u => u.CategoryName == category.CategoryName && u.ShopId == shop.Id);
                 if (existingCategory != null)
                 {
@@ -91,7 +91,7 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Shop shop = await _common.ValidateCompany<Shop>(role, shopId);
+                Shop shop = await _common.ValidateOwner<Shop>(role, shopId);
                 Category existingCategory = await _categoryRepository.FindById(category.Id.ToString());
                 if (existingCategory == null || existingCategory.ShopId != shop.Id)
                     throw new HttpResponseException("Category not found");
@@ -114,7 +114,7 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Shop shop = await _common.ValidateCompany<Shop>(role, shopId);
+                Shop shop = await _common.ValidateOwner<Shop>(role, shopId);
                 Category category = await _categoryRepository.FindById(id);
                 if (category == null || category.ShopId != shop.Id)
                     throw new HttpResponseException("Category not found");
@@ -130,7 +130,7 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                Shop shop = await _common.ValidateCompany<Shop>(role, shopId);
+                Shop shop = await _common.ValidateOwner<Shop>(role, shopId);
                 Category category = await _categoryRepository.FindById(id);
                 if (category == null || category.ShopId != shop.Id)
                     throw new HttpResponseException("Category not found");

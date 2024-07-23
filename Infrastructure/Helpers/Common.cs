@@ -12,7 +12,7 @@ namespace Infrastructure.Helpers
 {
     public class Common : ICommon
     {
-        public async Task<T> ValidateCompany<T>(string role, string companyId) where T : class
+        public async Task<T> ValidateOwner<T>(string role, string companyId) where T : class
         {
             Response response = await GetCompany<T>(role, companyId);
             if (response is not Response<T> entityResponse)
@@ -39,6 +39,11 @@ namespace Infrastructure.Helpers
                 {
                     var shop = await _shop.FindById(id);
                     return shop as T;
+                }
+                else if (typeof(T) == typeof(User))
+                {
+                    var user = await _user.FindById(id);
+                    return user as T;
                 }
                 else
                 {
@@ -69,13 +74,15 @@ namespace Infrastructure.Helpers
             return response;
         }
 
-        public Common(IRepository<Company> companies, IRepository<Shop>? shops)
+        public Common(IRepository<Company> companies, IRepository<Shop> shops, IRepository<User> user)
         {
             _companies = companies;
             _shop = shops;
+            _user = user;
         }
 
         private readonly IRepository<Company> _companies;
         private readonly IRepository<Shop> _shop;
+        private readonly IRepository<User> _user;
     }
 }

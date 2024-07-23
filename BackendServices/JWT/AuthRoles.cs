@@ -5,7 +5,7 @@
         public const string Admin = "admin";
         public const string Manager = "manager";
         public const string Owner = "owner";
-        public const string Employee = "employee";
+        public const string User = "user";
 
         public const string RefreshToken = "refresh_token";
     }
@@ -18,6 +18,6 @@
 
     public static class PrePurchaseJwtConstants
     {
-        public const string EmployeeId = "employeeId";
+        public const string UserId = "userId";
     }
 }
