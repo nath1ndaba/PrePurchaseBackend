@@ -16,7 +16,7 @@ namespace Infrastructure.Actions.Admin
     {
         public async Task<LoginResponse> Login(LoginModel model)
         {
-            string email = model.Email.Trim().ToLowerInvariant();
+            string email = model.Username.Trim().ToLowerInvariant();
             DiscontinuedUser user = _users.FindOne(x => x.Email == email).Result;
             if (user is null)
                 throw new HttpResponseException(new Response(HttpStatusCode.Unauthorized, error: "Invalid Email😒"));
