@@ -3,12 +3,11 @@
 namespace BackendServices.Models
 {
     public record LoginModel(
-         string Email,
-         string UserName,
+         [Required] string Username,
         [Required] string Password)
     {
         public LoginModel Sanitize()
-            => this with { Email = Email.ToLowerInvariant() };
+            => this with { Username = Username.ToLowerInvariant() };
     }
 
 

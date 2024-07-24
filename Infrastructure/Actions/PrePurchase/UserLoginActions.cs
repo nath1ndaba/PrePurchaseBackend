@@ -47,55 +47,35 @@ namespace Infrastructure.Actions.PrePurchase
 
         public async Task<UserLoginResponse> UserLogin(LoginModel model)
         {
-            if (model == null)
-                throw new ArgumentNullException(nameof(model));
+            if (model == null) throw new ArgumentNullException(nameof(model));
 
-            string email = model.Email?.Trim().ToLowerInvariant();
-            string userName = model.UserName?.Trim().ToLowerInvariant();
+            string userName = model.Username.Trim().ToLowerInvariant();
 
-            if (string.IsNullOrEmpty(email) && string.IsNullOrEmpty(userName))
+            if (string.IsNullOrEmpty(userName))
             {
-                _logger.LogWarning("Both email and username are null or empty.");
+                _logger.LogWarning(" username is null or empty.");
                 throw new HttpResponseException(new Response(HttpStatusCode.BadRequest, error: "Email or username is required."));
             }
 
-            User? user = null;
-
-            if (!string.IsNullOrEmpty(email))
-            {
-                user = await _users.FindOne(x => x.Email.Trim().ToLowerInvariant() == email);
-                if (user != null)
-                {
-                    _logger.LogInformation("User found by email: {Email}", email);
-                }
-            }
-
-            if (user == null && !string.IsNullOrEmpty(userName))
-            {
-                user = await _users.FindOne(x => x.UserName.Trim().ToLowerInvariant() == userName);
-                if (user != null)
-                {
-                    _logger.LogInformation("User found by username: {UserName}", userName);
-                }
-            }
+            User user = await _users.FindOne(x => x.Email.Trim().ToLowerInvariant() == userName || x.SurName.Trim().ToLowerInvariant() == userName);
 
             if (user == null)
             {
-                _logger.LogWarning("User not found for email: {Email} and username: {UserName}", email, userName);
-                throw new HttpResponseException(new Response(HttpStatusCode.Unauthorized, error: "Invalid username or email 😒"));
+                _logger.LogWarning("User not found for username: {UserName}", userName);
+                throw new HttpResponseException(new Response(HttpStatusCode.Unauthorized, error: "Invalid username 😒"));
             }
 
             bool matches = await _passwordManager.IsMatch(model.Password, user.Password);
             if (!matches)
             {
-                _logger.LogWarning("Password mismatch for user with email: {Email}", email);
+                _logger.LogWarning("Password mismatch for user with username: {userName}", userName);
                 throw new HttpResponseException(new Response(HttpStatusCode.Unauthorized, error: "Invalid Password 😒"));
             }
 
-            _logger.LogInformation("User successfully authenticated with email: {Email}", email);
+            _logger.LogInformation("User successfully authenticated with email: {userName}", userName);
 
             var userInfo = new UserDto();
-            userInfo.ShopId = new List<string>();
+            userInfo.ShopId = [];
             userInfo.DtoFromUser(user);
             userInfo.Address = await _address.FindOne(x => x.AddressBelongsToId == user.Id) ?? new Address();
 
@@ -120,7 +100,7 @@ namespace Infrastructure.Actions.PrePurchase
                 var shops = await _shop.Find(x => user.ShopId.Contains(x.Id));
                 if (shops != null && shops.Any())
                 {
-                    _logger.LogInformation("Found {ShopCount} shops for user with email: {Email}", shops.Count(), email);
+                    _logger.LogInformation("Found {ShopCount} shops for user with username: {userName}", shops.Count(), userName);
 
                     // Fetch all addresses in a single query
                     var shopIds = shops.Select(x => x.Id).ToList();
@@ -143,7 +123,7 @@ namespace Infrastructure.Actions.PrePurchase
                 }
                 else
                 {
-                    _logger.LogInformation("No shops found for user with email: {Email}", email);
+                    _logger.LogInformation("No shops found for user with username: {userName}", userName);
                     throw new HttpResponseException(new Response(HttpStatusCode.NoContent, error: "You do not belong to any shop?? 😒"));
 
                 }
