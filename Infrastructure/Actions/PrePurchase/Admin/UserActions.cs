@@ -33,7 +33,11 @@ namespace Infrastructure.Actions.PrePurchase
         public async Task<Response> RegisterUser(UserDto model, string createdBy)
         {
             if (model == null) throw new ArgumentNullException(nameof(model));
-
+            if (model.UserName.Contains('@'))
+            {
+                throw new HttpResponseException(new Response(HttpStatusCode.NotAcceptable,
+                  error: "Username can not have '@', please use other characters"));
+            }
             _logger.LogInformation($"Registering user with email: {model.Email}");
 
             User user = await _user.FindOne(x =>

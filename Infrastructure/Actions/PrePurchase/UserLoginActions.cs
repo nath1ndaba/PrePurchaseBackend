@@ -49,7 +49,7 @@ namespace Infrastructure.Actions.PrePurchase
         {
             if (model == null) throw new ArgumentNullException(nameof(model));
 
-            string userName = model.Username.Trim().ToLowerInvariant();
+            string userName = model.Username.Trim();
 
             if (string.IsNullOrEmpty(userName))
             {
@@ -57,7 +57,15 @@ namespace Infrastructure.Actions.PrePurchase
                 throw new HttpResponseException(new Response(HttpStatusCode.BadRequest, error: "Email or username is required."));
             }
 
-            User user = await _users.FindOne(x => x.Email.Trim().ToLowerInvariant() == userName || x.SurName.Trim().ToLowerInvariant() == userName);
+            User? user = null;
+            if (userName.Contains('@'))
+            {
+                user = await _users.FindOne(x => x.Email.Trim().ToLowerInvariant() == userName.ToLowerInvariant());
+            }
+            else
+            {
+                user = await _users.FindOne(x => x.UserName.Trim().ToLowerInvariant() == userName);
+            }
 
             if (user == null)
             {
