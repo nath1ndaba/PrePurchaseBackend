@@ -34,7 +34,7 @@ namespace BackendServer.V1.Controllers
             SucessfulLogin sucessfulLogin = new()
             {
                 UserLoginResponse = response,
-                JwtTokenModel = jwt
+                Tokens = jwt
             };
 
             return new Response<SucessfulLogin>(sucessfulLogin);

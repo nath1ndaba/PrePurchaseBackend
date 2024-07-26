@@ -35,7 +35,7 @@ namespace BackendServer
                 if (error is HttpResponseException responseError)
                     response = responseError.Response;
                 else
-                    response = new Response(HttpStatusCode.InternalServerError, error: "Something went wrong!");
+                    response = new Response(HttpStatusCode.InternalServerError, error: error.Message);
 
                 context.Response.StatusCode = (int)response.StatusCode;
                 await context.Response.WriteAsJsonAsync(response);

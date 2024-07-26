@@ -23,6 +23,7 @@ namespace Infrastructure.Actions.PrePurchase
         private readonly IRepository<Shop> _shop;
         private readonly IRepository<User> _users;
         private readonly IRepository<Product> _product;
+        private readonly IRepository<UserAccount> _userAccount;
         private readonly IQueryBuilderProvider _queryBuilderProvider;
         private readonly IPasswordManager _passwordManager;
         private readonly ILogger<UserLoginActions> _logger;
@@ -32,6 +33,7 @@ namespace Infrastructure.Actions.PrePurchase
             IRepository<User> users,
             IRepository<Shop> shop,
             IRepository<Product> product,
+            IRepository<UserAccount> userAccount,
             IQueryBuilderProvider queryBuilderProvider,
             IPasswordManager passwordManager,
             ILogger<UserLoginActions> logger)
@@ -39,6 +41,7 @@ namespace Infrastructure.Actions.PrePurchase
             _address = address ?? throw new ArgumentNullException(nameof(address));
             _users = users ?? throw new ArgumentNullException(nameof(users));
             _shop = shop ?? throw new ArgumentNullException(nameof(shop));
+            _userAccount = userAccount ?? throw new ArgumentNullException(nameof(userAccount));
             _product = product ?? throw new ArgumentNullException(nameof(product));
             _queryBuilderProvider = queryBuilderProvider ?? throw new ArgumentNullException(nameof(queryBuilderProvider));
             _passwordManager = passwordManager ?? throw new ArgumentNullException(nameof(passwordManager));
@@ -87,23 +90,31 @@ namespace Infrastructure.Actions.PrePurchase
             userInfo.DtoFromUser(user);
             userInfo.Address = await _address.FindOne(x => x.AddressBelongsToId == user.Id) ?? new Address();
 
-            var products = await _product.Find(x => user.ShopId.Contains(x.ShopId));
             var productsResults = new List<ProductDto>();
-            foreach (var product in products)
-            {
-                var dto = new ProductDto();
-                dto.DtoFromProduct(product);
-                productsResults.Add(dto);
-            }
+            var userAccountResults = new UserAccountDto();
+            var loginResponse = new UserLoginResponse();
 
-            var loginResponse = new UserLoginResponse
+            loginResponse.Shop = [];
+            loginResponse.UserAccount = new UserAccountDto();
+            loginResponse.User = userInfo;//
+
+            if (userInfo.Role is UserRole.Resident)
             {
-                User = userInfo,
-                Products = productsResults,
-                Shop = [],
-            };
-            if (user.Role != UserRole.Resident)
+                var userAccount = await _userAccount.FindOne(x => x.UserId == user.Id);
+                if (userAccount != null)
+                {
+                    userAccountResults.DtoFromUserAccount(userAccount);//
+                }
+            }
+            else
             {
+                var products = await _product.Find(x => user.ShopId.Contains(x.ShopId));
+                foreach (var product in products)
+                {
+                    var dto = new ProductDto();
+                    dto.DtoFromProduct(product);
+                    productsResults.Add(dto);//
+                }
                 // Fetch all shops related to the user in a single query
                 var shops = await _shop.Find(x => user.ShopId.Contains(x.Id));
                 if (shops != null && shops.Any())
@@ -126,7 +137,7 @@ namespace Infrastructure.Actions.PrePurchase
                             shopDto.Address = shopAddress;
                         }
 
-                        loginResponse.Shop.Add(shopDto);
+                        loginResponse.Shop.Add(shopDto);//
                     }
                 }
                 else
@@ -136,6 +147,12 @@ namespace Infrastructure.Actions.PrePurchase
 
                 }
             }
+
+
+            loginResponse.User = userInfo;
+            loginResponse.UserAccount = userAccountResults;
+
+
             return loginResponse;
         }
     }

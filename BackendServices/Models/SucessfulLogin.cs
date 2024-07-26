@@ -4,7 +4,7 @@ namespace BackendServices.Models
 {
     public class SucessfulLogin
     {
-        public JwtTokenModel JwtTokenModel { get; set; }
+        public JwtTokenModel Tokens { get; set; }
         public UserLoginResponse UserLoginResponse { get; set; }
     }
 }

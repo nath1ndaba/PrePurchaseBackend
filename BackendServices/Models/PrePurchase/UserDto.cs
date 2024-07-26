@@ -16,12 +16,12 @@ public class UserDto
     [BsonRequired]
     public string Id { get; set; }
 
-    public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedDate { get; set; } 
 
     [JsonConverter(typeof(ObjectIdConverter))]
     public string CreatedBy { get; set; }
 
-    public DateTime UpdatedDate { get; set; } = DateTime.UtcNow;
+    public DateTime UpdatedDate { get; set; } 
 
     [JsonConverter(typeof(ObjectIdConverter))]
     public string UpdatedBy { get; set; }
