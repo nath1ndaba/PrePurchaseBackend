@@ -46,4 +46,15 @@ public class ItemBalance
     public ObjectId ItemId { get; set; }
 }
 
+public class ItemBalancData
+{
+    public decimal Balance { get; set; }
+
+    [JsonConverter(typeof(ObjectIdConverter))]
+
+    public ObjectId ItemId { get; set; }
+
+
+}
+
 

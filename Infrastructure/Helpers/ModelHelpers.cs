@@ -148,6 +148,51 @@ namespace Infrastructure.Helpers
             shop.LicenseExpiryDate = dto.LicenseExpiryDate;
             return shop;
         }
+
+        public static Item DtoToItem(this Item item, ItemDto dto)
+        {
+            if (item == null) throw new ArgumentNullException(nameof(item));
+            if (dto == null) throw new ArgumentNullException(nameof(dto));
+            item.Id = ObjectId.Parse(dto.Id);
+            item.CreatedBy = ObjectId.Parse(dto.CreatedBy);
+            item.CreatedDate = dto.CreatedDate;
+            item.UpdatedDate = dto.UpdatedDate;
+            item.UpdatedBy = ObjectId.Parse(dto.UpdatedBy);
+            item.DeletedIndicator = dto.DeletedIndicator;
+            item.Name = dto.Name;
+            item.Description = dto.Description;
+            item.Price = dto.Price;
+            item.Category = dto.Category;
+            item.StockQuantity = dto.StockQuantity;
+            item.Status = dto.Status;
+            item.Tags = dto.Tags;
+            item.QRCode = dto.QRCode;
+            item.ApprovalStatus = dto.ApprovalStatus;
+            return item;
+        }
+
+        public static ItemDto DtoFromItem(this ItemDto dto, Item item)
+        {
+            if (dto == null) throw new ArgumentNullException(nameof(dto));
+            if (item == null) throw new ArgumentNullException(nameof(item));
+            dto.Id = item.Id.ToString();
+            dto.CreatedBy = item.CreatedBy.ToString();
+            dto.CreatedDate = item.CreatedDate;
+            dto.UpdatedDate = item.UpdatedDate;
+            dto.UpdatedBy = item.UpdatedBy.ToString();
+            dto.DeletedIndicator = item.DeletedIndicator;
+            dto.Name = item.Name;
+            dto.Description = item.Description;
+            dto.Price = item.Price;
+            dto.Category = item.Category;
+            dto.StockQuantity = item.StockQuantity;
+            dto.Status = item.Status;
+            dto.Tags = item.Tags;
+            dto.QRCode = item.QRCode;
+            dto.ApprovalStatus = item.ApprovalStatus;
+            return dto;
+        }
+
         public static User DtoToUser(this User user, UserDto dto)
         {
             if (user == null) throw new ArgumentNullException(nameof(user));

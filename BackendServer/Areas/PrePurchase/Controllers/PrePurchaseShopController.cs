@@ -1,5 +1,3 @@
-using System.Security.Claims;
-using System.Threading.Tasks;
 using BackendServices;
 using BackendServices.Actions.PrePurchase;
 using BackendServices.JWT;
@@ -7,9 +5,9 @@ using BackendServices.Models;
 using BackendServices.Models.PrePurchase;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Bson;
 using PrePurchase.Models;
-using PrePurchase.Models.PrePurchase;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace BackendServer.V1.Controllers
 {
@@ -34,7 +32,6 @@ namespace BackendServer.V1.Controllers
         }
 
         [HttpGet("getShops")]
-        [AllowAnonymous]
         [ProducesResponseType(typeof(Response<JwtTokenModel>), 200)]
         public async Task<Response> GetShops()
         {

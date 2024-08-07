@@ -10,5 +10,8 @@ namespace BackendServices.Actions.PrePurchase
         Task<Response> GetRecharges(string userId);
         Task<Response> RechargeAccount(RechargeDto model, string createdBy, string userId = null);
         Task<Response> UpdateUserAccountBalance(decimal amount, string updatedBy, string userId = null);
+        Task<Response> GetUserAccountBalance(string userId);
+        Task<Response> GetDashboardData(string userId);
+
     }
 }

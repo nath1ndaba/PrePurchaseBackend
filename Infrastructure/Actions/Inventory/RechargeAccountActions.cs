@@ -20,17 +20,20 @@ namespace Infrastructure.Repositories
     {
         private readonly IRepository<Recharge> _rechargeRepository;
         private readonly IRepository<UserAccount> _userAccountRepository;
+        private readonly IRepository<Item> _userItemRepository;
         private readonly ICommon _common;
         private readonly ILogger<RechargeAccountActions> _logger;
 
         public RechargeAccountActions(
             IRepository<Recharge> rechargeRepository,
             IRepository<UserAccount> userAccountRepository,
+            IRepository<Item> userItemRepository,
             ICommon common,
             ILogger<RechargeAccountActions> logger)
         {
             _rechargeRepository = rechargeRepository ?? throw new ArgumentNullException(nameof(rechargeRepository));
             _userAccountRepository = userAccountRepository ?? throw new ArgumentNullException(nameof(userAccountRepository));
+            _userItemRepository = userItemRepository ?? throw new ArgumentNullException(nameof(userItemRepository));
             _common = common ?? throw new ArgumentNullException(nameof(common));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
@@ -49,8 +52,15 @@ namespace Infrastructure.Repositories
                     throw new HttpResponseException($"No recharges found for {userId}");
                 }
 
+                var Dtos = new List<RechargeDto>();
+                foreach (var item in recharges)
+                {
+                    var dto = new RechargeDto();
+                    dto.DtoFromRecharge(item);
+                    Dtos.Add(dto);
+                }
                 _logger.LogInformation("Recharges successfully fetched for user {UserId}", userId);
-                return new Response<IEnumerable<Recharge>>(recharges);
+                return new Response<IEnumerable<RechargeDto>>(Dtos);
             }
             catch (Exception ex)
             {
@@ -103,13 +113,84 @@ namespace Infrastructure.Repositories
                     _logger.LogWarning("Recharge {RechargeId} not found for user {UserId}", id, userId);
                     throw new HttpResponseException("Recharge not found");
                 }
+                var dto = new RechargeDto();
+                dto.DtoFromRecharge(recharge);
 
                 _logger.LogInformation("Recharge {RechargeId} successfully fetched for user {UserId}", id, userId);
-                return new Response<Recharge>(recharge);
+                return new Response<RechargeDto>(dto);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error fetching recharge {RechargeId} for user {UserId}", id, userId);
+                throw new HttpResponseException(ex.Message);
+            }
+        }
+
+        public async Task<Response> GetUserAccountBalance(string userId)
+        {
+
+            try
+            {
+                var accountBalance = await _userAccountRepository.FindOne(x => x.UserId == ObjectId.Parse(userId));
+
+                if (accountBalance == null)
+                {
+                    throw new HttpResponseException("User account not found");
+                }
+                var dto = new UserAccountDto();
+                dto.DtoFromUserAccount(accountBalance);
+
+                _logger.LogInformation("Account for user {UserId} successfully fetched", userId);
+                return new Response<UserAccountDto>(dto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching userAccount for user {UserId}", userId);
+                throw new HttpResponseException(ex.Message);
+            }
+        }
+
+
+        public async Task<Response> GetDashboardData(string userId)
+        {
+            try
+            {
+                var accountBalance = await _userAccountRepository.FindOne(x => x.UserId == ObjectId.Parse(userId));
+
+                if (accountBalance == null)
+                {
+                    throw new HttpResponseException("User account not found");
+                }
+
+                var itemIds = accountBalance.ItemsBalances.Select(ib => ib.ItemId).ToList();
+                var items = await _userItemRepository.Find(x => itemIds.Contains(x.Id));
+                var itemsDictionary = items.ToDictionary(item => item.Id);
+
+                var itemDtos = accountBalance.ItemsBalances
+                                .Where(ib => itemsDictionary.ContainsKey(ib.ItemId))
+                                .Select(ib =>
+                                {
+                                    var item = itemsDictionary[ib.ItemId];
+                                    var itemDto = new ItemDto();
+                                    itemDto.DtoFromItem(item);
+                                    itemDto.RechargeBalance = ib.Balance;
+                                    return itemDto;
+                                })
+                                .ToList();
+
+                var dashboardData = new DashboardData
+                {
+                    UserId = accountBalance.UserId.ToString(),
+                    AmountBalance = accountBalance.AmountBalance,
+                    Items = itemDtos
+                };
+
+                _logger.LogInformation("Dashboard data for user {UserId} successfully fetched", userId);
+                return new Response<DashboardData>(dashboardData);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching user account for user {UserId}", userId);
                 throw new HttpResponseException(ex.Message);
             }
         }
@@ -173,5 +254,6 @@ namespace Infrastructure.Repositories
                 throw new HttpResponseException(ex.Message);
             }
         }
+
     }
 }

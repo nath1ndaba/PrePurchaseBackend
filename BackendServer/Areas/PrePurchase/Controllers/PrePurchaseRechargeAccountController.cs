@@ -1,14 +1,13 @@
 using BackendServices;
-using BackendServices.Actions;
-using BackendServices.Actions.Inventory;
 using BackendServices.Actions.PrePurchase;
 using BackendServices.JWT;
 using BackendServices.Models;
+using BackendServices.Models.PrePurchase;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PrePurchase.Models;
 using PrePurchase.Models.PrePurchase;
-using System.Linq;
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -18,12 +17,11 @@ namespace BackendServer.V1.Controllers
     [Consumes("application/json")]
     [Area("prepurchase")]
     [Route("[area]/[controller]")]
-    [Authorize(Roles = AuthRoles.User)]
     [ApiController]
+
     public class PrePurchaseRechargeAccountController : BaseController
     {
         [HttpPost("recharge/{userId}")]
-        [AllowAnonymous]
         [ProducesResponseType(typeof(Response<JwtTokenModel>), 200)]
         public async Task<Response> RechargeAccount([FromBody] RechargeDto model, [FromRoute] string userId)
         {
@@ -34,7 +32,6 @@ namespace BackendServer.V1.Controllers
         }
 
         [HttpPut("UpdateUserAccountBalance")]
-        [AllowAnonymous]
         [ProducesResponseType(typeof(Response<JwtTokenModel>), 200)]
         public async Task<Response> UpdateUserAccountBalance([FromQuery] decimal amount, [FromRoute] string userId)
         {
@@ -45,8 +42,7 @@ namespace BackendServer.V1.Controllers
         }
 
         [HttpGet("getRecharge/{rechargeId}")]
-        [AllowAnonymous]
-        [ProducesResponseType(typeof(Response<JwtTokenModel>), 200)]
+        [ProducesResponseType(typeof(Response<RechargeDto>), 200)]
         public async Task<Response> GetRechargeAccount([FromRoute] string rechargeId, [FromQuery] string userId)
         {
             Response response =
@@ -55,12 +51,31 @@ namespace BackendServer.V1.Controllers
         }
 
         [HttpGet("getRecharges/{userId}")]
-        [AllowAnonymous]
-        [ProducesResponseType(typeof(Response<JwtTokenModel>), 200)]
+        [ProducesResponseType(typeof(Response<List<RechargeDto>>), 200)]
         public async Task<Response> GetRechargeAccounts([FromRoute] string userId)
         {
             Response response =
                 await _registerRechargeAccountActions.GetRecharges(userId);
+
+            return response;
+        }
+
+        [HttpGet("GetUserAccountBalance/{userId}")]
+        [ProducesResponseType(typeof(Response<UserAccountDto>), 200)]
+        public async Task<Response> GetUserAccountBalance([FromRoute] string userId)
+        {
+            Response response =
+                await _registerRechargeAccountActions.GetUserAccountBalance(userId);
+
+            return response;
+        }
+
+        [HttpGet("GetDashboardData/{userId}")]
+        [ProducesResponseType(typeof(Response<DashboardData>), 200)]
+        public async Task<Response> GetDashboardData([FromRoute] string userId)
+        {
+            Response response =
+                await _registerRechargeAccountActions.GetDashboardData(userId);
 
             return response;
         }
