@@ -5,6 +5,7 @@ using BackendServices.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PrePurchase.Models;
+using PrePurchase.Models.PrePurchase;
 using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
@@ -14,7 +15,7 @@ using System.Threading.Tasks;
 namespace BackendServer.V1.Controllers
 {
 #nullable enable
-    [Area("api/v1")]
+    [Area("prepurchase")]
     [Route("[area]/[controller]")]
     [ApiController]
     [Authorize(Roles = AuthRoles.RefreshToken)]
@@ -66,7 +67,15 @@ namespace BackendServer.V1.Controllers
             var accessTokenModel = authContainerModel.WithClaimes(accessTokenClaims);
             var accessToken = authService.GenerateJwtToken(accessTokenModel);
 
-            return new Response<JwtTokenModel>(new(_refreshToken, accessToken));
+            JwtTokenModel jwt = new(_refreshToken, accessToken);
+
+            SucessfulLogin sucessfulLogin = new()
+            {
+                UserLoginResponse = new UserLoginResponse(),//TODO: return this to frontend
+                Tokens = jwt
+            };
+
+            return new Response<SucessfulLogin>(sucessfulLogin);
 
         }
     }
