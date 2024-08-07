@@ -8,7 +8,7 @@ using PrePurchase.Models.Converters;
 
 namespace PrePurchase.Models.PrePurchase;
 
-public class UserAccount
+public class CashToItem
 {
     [JsonConverter(typeof(ObjectIdConverter))]
     [BsonId]
@@ -27,25 +27,19 @@ public class UserAccount
 
     public bool DeletedIndicator { get; set; }
 
+    [Required]
     [JsonConverter(typeof(ObjectIdConverter))]
-    public ObjectId UserId { get; set; } // Foreign key to the User
+    public ObjectId UserId { get; set; }
 
     [Required]
-    [Range(0.01, double.MaxValue, ErrorMessage = "Price must be greater than zero.")]
-    public decimal AmountBalance { get; set; }
-
-    public List<ItemBalance> ItemsBalances { get; set; } // Account balance
-}
-
-public class ItemBalance
-{
-    [Range(0.01, double.MaxValue, ErrorMessage = "Price must be greater than zero.")]
-    public decimal Balance { get; set; }
     [JsonConverter(typeof(ObjectIdConverter))]
-
     public ObjectId ItemId { get; set; }
     public string ItemName { get; set; }
     public byte[] ItemImage { get; set; }
+
+    [Required]
+    [Range(0.01, double.MaxValue, ErrorMessage = "Amount must be greater than zero.")]
+    public decimal NumberOfItemsPurchased { get; set; }
+    public decimal AmountSpentOnItem { get; set; }
+    public decimal PreviousPriceToPurchaseItem { get; set; } //incase if prices increase on inventory NB: always update this with price from Inventory when a purchase takes place
 }
-
-

@@ -167,6 +167,7 @@ namespace Infrastructure.Helpers
             item.Status = dto.Status;
             item.Tags = dto.Tags;
             item.QRCode = dto.QRCode;
+            item.ItemImage = dto.ItemImage;
             item.ApprovalStatus = dto.ApprovalStatus;
             return item;
         }
@@ -189,6 +190,7 @@ namespace Infrastructure.Helpers
             dto.Status = item.Status;
             dto.Tags = item.Tags;
             dto.QRCode = item.QRCode;
+            dto.ItemImage = item.ItemImage;
             dto.ApprovalStatus = item.ApprovalStatus;
             return dto;
         }
@@ -336,6 +338,50 @@ namespace Infrastructure.Helpers
             recharge.PaymentMethod = dto.PaymentMethod;
 
             return recharge;
+        }
+
+        public static CashToItemDto DtoFromCashToItem(this CashToItemDto dto, CashToItem cashToItem)
+        {
+            if (dto == null) throw new ArgumentNullException(nameof(dto));
+            if (cashToItem == null) throw new ArgumentNullException(nameof(cashToItem));
+
+            dto.Id = cashToItem.Id.ToString();
+            dto.CreatedDate = cashToItem.CreatedDate;
+            dto.CreatedBy = cashToItem.CreatedBy.ToString();
+            dto.UpdatedDate = cashToItem.UpdatedDate;
+            dto.UpdatedBy = cashToItem.UpdatedBy.ToString();
+            dto.DeletedIndicator = cashToItem.DeletedIndicator;
+            dto.UserId = cashToItem.UserId.ToString();
+            dto.ItemId = cashToItem.ItemId.ToString();
+            dto.ItemName = cashToItem.ItemName;
+            dto.ItemImage = cashToItem.ItemImage;
+            dto.NumberOfItemsPurchased = cashToItem.NumberOfItemsPurchased;
+            dto.AmountSpentOnItem = cashToItem.AmountSpentOnItem;
+            dto.PreviousPriceToPurchaseItem = cashToItem.PreviousPriceToPurchaseItem;
+
+            return dto;
+        }
+
+        public static CashToItem DtoToCashToItem(this CashToItem cashToItem, CashToItemDto dto)
+        {
+            if (cashToItem == null) throw new ArgumentNullException(nameof(cashToItem));
+            if (dto == null) throw new ArgumentNullException(nameof(dto));
+
+            cashToItem.Id = ObjectId.Parse(dto.Id);
+            cashToItem.CreatedDate = dto.CreatedDate;
+            cashToItem.CreatedBy = ObjectId.Parse(dto.CreatedBy);
+            cashToItem.UpdatedDate = dto.UpdatedDate;
+            cashToItem.UpdatedBy = ObjectId.Parse(dto.UpdatedBy);
+            cashToItem.DeletedIndicator = dto.DeletedIndicator;
+            cashToItem.UserId = ObjectId.Parse(dto.UserId);
+            cashToItem.ItemId = ObjectId.Parse(dto.ItemId);
+            cashToItem.ItemName = dto.ItemName;
+            cashToItem.ItemImage = dto.ItemImage;
+            cashToItem.NumberOfItemsPurchased = dto.NumberOfItemsPurchased;
+            cashToItem.AmountSpentOnItem = dto.AmountSpentOnItem;
+            cashToItem.PreviousPriceToPurchaseItem = dto.PreviousPriceToPurchaseItem;
+
+            return cashToItem;
         }
 
         public static UserAccountDto DtoFromUserAccount(this UserAccountDto dto, UserAccount userAccount)

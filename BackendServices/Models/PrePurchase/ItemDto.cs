@@ -48,6 +48,7 @@ public class ItemDto
     public List<string> Tags { get; set; }
 
     public string QRCode { get; set; }
+    public byte[] ItemImage { get; set; }
     public decimal RechargeBalance { get; set; }/// <summary>
                                                 /// needed only when fetching data and specifically for resident side
                                                 /// </summary>

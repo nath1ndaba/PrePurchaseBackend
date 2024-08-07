@@ -48,6 +48,7 @@ public class Item
     public List<string> Tags { get; set; } = new List<string>();
 
     public string QRCode { get; set; }
+    public byte[] ItemImage { get; set; }
 
     public ApprovalStatus ApprovalStatus { get; set; } = ApprovalStatus.Pending;
 }

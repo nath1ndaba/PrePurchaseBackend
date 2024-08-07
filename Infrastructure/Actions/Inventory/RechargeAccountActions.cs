@@ -162,18 +162,18 @@ namespace Infrastructure.Repositories
                     throw new HttpResponseException("User account not found");
                 }
 
-                var itemIds = accountBalance.ItemsBalances.Select(ib => ib.ItemId).ToList();
+                var itemIds = accountBalance.ItemsBalances.Select(x => x.ItemId).ToList();
                 var items = await _userItemRepository.Find(x => itemIds.Contains(x.Id));
                 var itemsDictionary = items.ToDictionary(item => item.Id);
 
                 var itemDtos = accountBalance.ItemsBalances
-                                .Where(ib => itemsDictionary.ContainsKey(ib.ItemId))
-                                .Select(ib =>
+                                .Where(x => itemsDictionary.ContainsKey(x.ItemId))
+                                .Select(x =>
                                 {
-                                    var item = itemsDictionary[ib.ItemId];
+                                    var item = itemsDictionary[x.ItemId];
                                     var itemDto = new ItemDto();
                                     itemDto.DtoFromItem(item);
-                                    itemDto.RechargeBalance = ib.Balance;
+                                    itemDto.RechargeBalance = x.Balance;
                                     return itemDto;
                                 })
                                 .ToList();

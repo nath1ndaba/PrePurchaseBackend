@@ -1,6 +1,4 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
-using PrePurchase.Models.PrePurchase;
-using System;
+﻿using PrePurchase.Models.PrePurchase;
 using System.Collections.Generic;
 
 namespace BackendServices.Models.PrePurchase
