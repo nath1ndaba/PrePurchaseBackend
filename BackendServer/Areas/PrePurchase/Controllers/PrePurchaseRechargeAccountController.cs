@@ -71,7 +71,7 @@ namespace BackendServer.V1.Controllers
         }
 
         [HttpGet("GetDashboardData/{userId}")]
-        [ProducesResponseType(typeof(Response<DashboardData>), 200)]
+        [ProducesResponseType(typeof(Response<UserAccountDto>), 200)]
         public async Task<Response> GetDashboardData([FromRoute] string userId)
         {
             Response response =

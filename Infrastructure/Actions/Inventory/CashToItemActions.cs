@@ -13,6 +13,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using PrePurchase.Models.Inventory;
 
 namespace Infrastructure.Repositories
 {
@@ -20,7 +21,7 @@ namespace Infrastructure.Repositories
     {
         private readonly IRepository<Recharge> _rechargeRepository;
         private readonly IRepository<UserAccount> _userAccountRepository;
-        private readonly IRepository<Item> _userItemRepository;
+        private readonly IRepository<Product> _userItemRepository;
         private readonly IRepository<CashToItem> _cashToItemRepository;
         private readonly ICommon _common;
         private readonly IRechargeAccountActions _rechargeAccount;
@@ -29,7 +30,7 @@ namespace Infrastructure.Repositories
         public CashToItemActions(
             IRepository<Recharge> rechargeRepository,
             IRepository<UserAccount> userAccountRepository,
-            IRepository<Item> userItemRepository,
+            IRepository<Product> userItemRepository,
             IRepository<CashToItem> cashToItemRepository,
             ICommon common,
             ILogger<RechargeAccountActions> logger,
@@ -143,6 +144,7 @@ namespace Infrastructure.Repositories
                 model.UserId = userId;
 
                 model.PreviousPriceToPurchaseItem = itemPrice;
+                model.AmountSpentOnItem = costUserWishesToPurchase;
                 model.ItemImage = item.ItemImage;
 
                 CashToItem cashToItem = new();
@@ -164,7 +166,7 @@ namespace Infrastructure.Repositories
                 if (userAccount.ItemsBalances == null || userAccount.ItemsBalances.Count == 0)
                 {
                     userAccount.ItemsBalances = new List<ItemBalance>();
-                    userAccount.ItemsBalances[0] = itemBalance;
+                    userAccount.ItemsBalances.Add(itemBalance);
                 }
                 else
                 {

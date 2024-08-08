@@ -32,5 +32,7 @@ namespace BackendServices.Models.PrePurchase
         public decimal Balance { get; set; }
 
         public string ItemId { get; set; }
+        public string ItemName { get; set; }
+        public byte[] ItemImage { get; set; }
     }
 }

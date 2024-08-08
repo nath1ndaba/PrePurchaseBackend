@@ -35,6 +35,7 @@ namespace PrePurchase.Models.Inventory
 
         public ObjectId ShopId { get; set; }
         public string Name { get; set; }
+        public byte[] ItemImage { get; set; }
         public string Description { get; set; }
         public decimal Price { get; set; }
         public string Barcode { get; set; }

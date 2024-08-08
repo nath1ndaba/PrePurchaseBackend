@@ -10,7 +10,7 @@ namespace PrePurchase.Models.PrePurchase
         public UserAccountDto UserAccount { get; set; }
         public List<ShopDto> Shop { get; set; }
 
-        public List<ProductDto> Products { get; set; }
+        public List<BackendServices.Models.Inventory.ProductDto> Products { get; set; }
 
 
     }

@@ -1,4 +1,5 @@
-﻿using PrePurchase.Models.PrePurchase;
+﻿using BackendServices.Models.Inventory;
+using PrePurchase.Models.PrePurchase;
 using System.Collections.Generic;
 
 namespace BackendServices.Models.PrePurchase
@@ -10,6 +11,6 @@ namespace BackendServices.Models.PrePurchase
 
         public decimal AmountBalance { get; set; }
 
-        public List<ItemDto> Items { get; set; }
+        public List<ItemBalance> ItemBalances { get; set; }
     }
 }

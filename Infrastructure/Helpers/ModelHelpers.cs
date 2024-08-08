@@ -149,51 +149,51 @@ namespace Infrastructure.Helpers
             return shop;
         }
 
-        public static Item DtoToItem(this Item item, ItemDto dto)
-        {
-            if (item == null) throw new ArgumentNullException(nameof(item));
-            if (dto == null) throw new ArgumentNullException(nameof(dto));
-            item.Id = ObjectId.Parse(dto.Id);
-            item.CreatedBy = ObjectId.Parse(dto.CreatedBy);
-            item.CreatedDate = dto.CreatedDate;
-            item.UpdatedDate = dto.UpdatedDate;
-            item.UpdatedBy = ObjectId.Parse(dto.UpdatedBy);
-            item.DeletedIndicator = dto.DeletedIndicator;
-            item.Name = dto.Name;
-            item.Description = dto.Description;
-            item.Price = dto.Price;
-            item.Category = dto.Category;
-            item.StockQuantity = dto.StockQuantity;
-            item.Status = dto.Status;
-            item.Tags = dto.Tags;
-            item.QRCode = dto.QRCode;
-            item.ItemImage = dto.ItemImage;
-            item.ApprovalStatus = dto.ApprovalStatus;
-            return item;
-        }
-
-        public static ItemDto DtoFromItem(this ItemDto dto, Item item)
-        {
-            if (dto == null) throw new ArgumentNullException(nameof(dto));
-            if (item == null) throw new ArgumentNullException(nameof(item));
-            dto.Id = item.Id.ToString();
-            dto.CreatedBy = item.CreatedBy.ToString();
-            dto.CreatedDate = item.CreatedDate;
-            dto.UpdatedDate = item.UpdatedDate;
-            dto.UpdatedBy = item.UpdatedBy.ToString();
-            dto.DeletedIndicator = item.DeletedIndicator;
-            dto.Name = item.Name;
-            dto.Description = item.Description;
-            dto.Price = item.Price;
-            dto.Category = item.Category;
-            dto.StockQuantity = item.StockQuantity;
-            dto.Status = item.Status;
-            dto.Tags = item.Tags;
-            dto.QRCode = item.QRCode;
-            dto.ItemImage = item.ItemImage;
-            dto.ApprovalStatus = item.ApprovalStatus;
-            return dto;
-        }
+        /*    public static PrePurchase.Models.PrePurchase.Product DtoToItem(this PrePurchase.Models.PrePurchase.Product item, PrePurchase.Models.PrePurchase.ProductDto dto)
+            {
+                if (item == null) throw new ArgumentNullException(nameof(item));
+                if (dto == null) throw new ArgumentNullException(nameof(dto));
+                item.Id = ObjectId.Parse(dto.Id);
+                item.CreatedBy = ObjectId.Parse(dto.CreatedBy);
+                item.CreatedDate = dto.CreatedDate;
+                item.UpdatedDate = dto.UpdatedDate;
+                item.UpdatedBy = ObjectId.Parse(dto.UpdatedBy);
+                item.DeletedIndicator = dto.DeletedIndicator;
+                item.Name = dto.Name;
+                item.Description = dto.Description;
+                item.Price = dto.Price;
+                item.Category = dto.Category;
+                item.StockQuantity = dto.StockQuantity;
+                item.Status = dto.Status;
+                item.Tags = dto.Tags;
+                item.QRCode = dto.QRCode;
+                item.ItemImage = dto.ItemImage;
+                item.ApprovalStatus = dto.ApprovalStatus;
+                return item;
+            }
+    */
+        /*  public static PrePurchase.Models.PrePurchase.ProductDto DtoFromItem(this PrePurchase.Models.PrePurchase.ProductDto dto, PrePurchase.Models.PrePurchase.Product item)
+          {
+              if (dto == null) throw new ArgumentNullException(nameof(dto));
+              if (item == null) throw new ArgumentNullException(nameof(item));
+              dto.Id = item.Id.ToString();
+              dto.CreatedBy = item.CreatedBy.ToString();
+              dto.CreatedDate = item.CreatedDate;
+              dto.UpdatedDate = item.UpdatedDate;
+              dto.UpdatedBy = item.UpdatedBy.ToString();
+              dto.DeletedIndicator = item.DeletedIndicator;
+              dto.Name = item.Name;
+              dto.Description = item.Description;
+              dto.Price = item.Price;
+              dto.Category = item.Category;
+              dto.StockQuantity = item.StockQuantity;
+              dto.Status = item.Status;
+              dto.Tags = item.Tags;
+              dto.QRCode = item.QRCode;
+              dto.ItemImage = item.ItemImage;
+              dto.ApprovalStatus = item.ApprovalStatus;
+              return dto;
+          }*/
 
         public static User DtoToUser(this User user, UserDto dto)
         {
@@ -220,6 +220,7 @@ namespace Infrastructure.Helpers
 
             return user;
         }
+
         public static UserDto DtoFromUser(this UserDto dto, User shop)
         {
             if (dto == null) throw new ArgumentNullException(nameof(dto));
@@ -268,6 +269,7 @@ namespace Infrastructure.Helpers
             dto.ReorderQuantity = product.ReorderQuantity;
             dto.BulkQuantity = product.BulkQuantity;
             dto.BulkUnit = product.BulkUnit;
+            dto.ItemImage = product.ItemImage;
 
             return dto;
         }
@@ -297,9 +299,11 @@ namespace Infrastructure.Helpers
             product.ReorderQuantity = dto.ReorderQuantity;
             product.BulkQuantity = dto.BulkQuantity;
             product.BulkUnit = dto.BulkUnit;
+            product.ItemImage = dto.ItemImage;
 
             return product;
         }
+
         public static RechargeDto DtoFromRecharge(this RechargeDto dto, Recharge recharge)
         {
             if (dto == null) throw new ArgumentNullException(nameof(dto));
@@ -400,7 +404,9 @@ namespace Infrastructure.Helpers
             dto.ItemsBalances = userAccount.ItemsBalances?.ConvertAll(ib => new ItemBalanceDto
             {
                 Balance = ib.Balance,
-                ItemId = ib.ItemId.ToString()
+                ItemId = ib.ItemId.ToString(),
+                ItemName = ib.ItemName,
+                ItemImage = ib.ItemImage,
             });
 
             return dto;

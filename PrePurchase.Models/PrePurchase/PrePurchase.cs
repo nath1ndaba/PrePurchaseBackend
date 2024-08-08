@@ -1,11 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using PrePurchase.Models.Converters;
+using PrePurchase.Models.Inventory;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace PrePurchase.Models.PrePurchase;
 
@@ -30,7 +30,7 @@ public class PrePurchase
 
     public int ResidentId { get; set; }
 
-    public List<Item> Items { get; set; }
+    public List<Product> Items { get; set; }
 
     [Required]
     public bool IsFullItem { get; set; }

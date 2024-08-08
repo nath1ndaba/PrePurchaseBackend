@@ -13,6 +13,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using BackendServices.Models.Inventory;
 
 namespace Infrastructure.Repositories
 {
@@ -20,21 +21,15 @@ namespace Infrastructure.Repositories
     {
         private readonly IRepository<Recharge> _rechargeRepository;
         private readonly IRepository<UserAccount> _userAccountRepository;
-        private readonly IRepository<Item> _userItemRepository;
-        private readonly ICommon _common;
         private readonly ILogger<RechargeAccountActions> _logger;
 
         public RechargeAccountActions(
             IRepository<Recharge> rechargeRepository,
             IRepository<UserAccount> userAccountRepository,
-            IRepository<Item> userItemRepository,
-            ICommon common,
             ILogger<RechargeAccountActions> logger)
         {
             _rechargeRepository = rechargeRepository ?? throw new ArgumentNullException(nameof(rechargeRepository));
             _userAccountRepository = userAccountRepository ?? throw new ArgumentNullException(nameof(userAccountRepository));
-            _userItemRepository = userItemRepository ?? throw new ArgumentNullException(nameof(userItemRepository));
-            _common = common ?? throw new ArgumentNullException(nameof(common));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -162,31 +157,40 @@ namespace Infrastructure.Repositories
                     throw new HttpResponseException("User account not found");
                 }
 
-                var itemIds = accountBalance.ItemsBalances.Select(x => x.ItemId).ToList();
-                var items = await _userItemRepository.Find(x => itemIds.Contains(x.Id));
-                var itemsDictionary = items.ToDictionary(item => item.Id);
+                var dto = new UserAccountDto();
+                dto.DtoFromUserAccount(accountBalance);
 
-                var itemDtos = accountBalance.ItemsBalances
-                                .Where(x => itemsDictionary.ContainsKey(x.ItemId))
-                                .Select(x =>
-                                {
-                                    var item = itemsDictionary[x.ItemId];
-                                    var itemDto = new ItemDto();
-                                    itemDto.DtoFromItem(item);
-                                    itemDto.RechargeBalance = x.Balance;
-                                    return itemDto;
-                                })
-                                .ToList();
+                /*  var itemIds = accountBalance.ItemsBalances.Select(x => x.ItemId).ToList();
+                  var items = await _userItemRepository.Find(x => itemIds.Contains(x.Id));
+                  var itemsDictionary = items.ToDictionary(item => item.Id);
 
-                var dashboardData = new DashboardData
-                {
-                    UserId = accountBalance.UserId.ToString(),
-                    AmountBalance = accountBalance.AmountBalance,
-                    Items = itemDtos
-                };
+                  foreach (var item in accountBalance.ItemsBalances)
+                  {
 
+
+                  }
+
+                  var itemDtos = accountBalance.ItemsBalances
+                                  .Where(x => itemsDictionary.ContainsKey(x.ItemId))
+                                  .Select(x =>
+                                  {
+                                      var item = itemsDictionary[x.ItemId];
+                                      var itemDto = new ProductDto();
+                                      itemDto.DtoFromProduct(item);
+                                      itemDto.RechargeBalance = x.Balance;
+                                      return itemDto;
+                                  })
+                                  .ToList();
+
+                  var dashboardData = new DashboardData
+                  {
+                      UserId = accountBalance.UserId.ToString(),
+                      AmountBalance = accountBalance.AmountBalance,
+                      ItemBalances = accountBalance.ItemsBalances
+                  };
+  */
                 _logger.LogInformation("Dashboard data for user {UserId} successfully fetched", userId);
-                return new Response<DashboardData>(dashboardData);
+                return new Response<UserAccountDto>(dto);
             }
             catch (Exception ex)
             {
