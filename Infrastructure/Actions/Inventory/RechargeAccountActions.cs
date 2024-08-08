@@ -78,6 +78,11 @@ namespace Infrastructure.Repositories
                 model.DeletedIndicator = false;
                 model.UserId = userId;
 
+
+                model.RechargeDate = DateTime.UtcNow;
+                model.PaymentMethod = "Credit Card";
+                model.Status = RechargeStatus.Completed;
+
                 Recharge recharge = new();
                 recharge.DtoToRecharge(model);
 
