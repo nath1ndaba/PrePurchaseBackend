@@ -14,28 +14,23 @@ namespace Infrastructure.Helpers
     {
         public async Task<T> ValidateOwner<T>(string role, string companyId) where T : class
         {
-            Response response = await GetCompany<T>(role, companyId);
+            Response response = await GetShop<T>(role, companyId);
             if (response is not Response<T> entityResponse)
                 throw new HttpResponseException(response);
 
             T entity = entityResponse.Data!;
-            if (entity is Company company && company.LicenseExpiryDate < DateTime.UtcNow)
+            if (entity is Shop shop && shop.LicenseExpiryDate < DateTime.UtcNow)
             {
                 throw new HttpResponseException(new Response(HttpStatusCode.NotFound, error: "Services Discontinued😒"));
             }
             return entity;
         }
 
-        private async Task<Response> GetCompany<T>(string role, string? id = null) where T : class
+        private async Task<Response> GetShop<T>(string role, string? id = null) where T : class
         {
             async Task<T> Data()
             {
-                if (typeof(T) == typeof(Company))
-                {
-                    var company = await _companies.FindById(id);
-                    return company as T;
-                }
-                else if (typeof(T) == typeof(Shop))
+                if (typeof(T) == typeof(Shop))
                 {
                     var shop = await _shop.FindById(id);
                     return shop as T;
@@ -74,14 +69,12 @@ namespace Infrastructure.Helpers
             return response;
         }
 
-        public Common(IRepository<Company> companies, IRepository<Shop> shops, IRepository<User> user)
+        public Common(IRepository<Shop> shops, IRepository<User> user)
         {
-            _companies = companies;
             _shop = shops;
             _user = user;
         }
 
-        private readonly IRepository<Company> _companies;
         private readonly IRepository<Shop> _shop;
         private readonly IRepository<User> _user;
     }

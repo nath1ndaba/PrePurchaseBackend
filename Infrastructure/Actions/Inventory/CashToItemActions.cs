@@ -4,47 +4,44 @@ using BackendServices.Exceptions;
 using BackendServices.Models;
 using BackendServices.Models.PrePurchase;
 using Infrastructure.Helpers;
+using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using PrePurchase.Models;
+using PrePurchase.Models.Inventory;
 using PrePurchase.Models.PrePurchase;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using PrePurchase.Models.Inventory;
 
 namespace Infrastructure.Repositories
 {
     public class CashToItemActions : ICashToItemActions
     {
-        private readonly IRepository<Recharge> _rechargeRepository;
         private readonly IRepository<UserAccount> _userAccountRepository;
         private readonly IRepository<Product> _userItemRepository;
         private readonly IRepository<CashToItem> _cashToItemRepository;
-        private readonly ICommon _common;
-        private readonly IRechargeAccountActions _rechargeAccount;
+        private readonly IRepository<Shop> _shopRepository;
+        private readonly IRepository<Address> _addressRepository;
         private readonly ILogger<RechargeAccountActions> _logger;
 
         public CashToItemActions(
-            IRepository<Recharge> rechargeRepository,
             IRepository<UserAccount> userAccountRepository,
             IRepository<Product> userItemRepository,
             IRepository<CashToItem> cashToItemRepository,
-            ICommon common,
             ILogger<RechargeAccountActions> logger,
-            IRechargeAccountActions rechargeAccount)
+            IRepository<Shop> shopRepository,
+            IRepository<Address> addressRepository)
         {
-            _rechargeRepository = rechargeRepository ?? throw new ArgumentNullException(nameof(rechargeRepository));
             _userAccountRepository = userAccountRepository ?? throw new ArgumentNullException(nameof(userAccountRepository));
             _userItemRepository = userItemRepository ?? throw new ArgumentNullException(nameof(userItemRepository));
             _cashToItemRepository = cashToItemRepository ?? throw new ArgumentNullException(nameof(cashToItemRepository));
-            _rechargeAccount = rechargeAccount ?? throw new ArgumentNullException(nameof(rechargeAccount));
-            _common = common ?? throw new ArgumentNullException(nameof(common));
+            _shopRepository = shopRepository ?? throw new ArgumentNullException(nameof(shopRepository));
+            _addressRepository = addressRepository ?? throw new ArgumentNullException(nameof(addressRepository));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
-
 
         public async Task<Response> GetCashToItems(string userId)
         {
@@ -197,6 +194,48 @@ namespace Infrastructure.Repositories
         public Task<Response> UndoCashToItem(string id, string userId)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<Response> GetTopNearbyShops(ResidentLocation residentLocation, int topN)
+        {
+            /*                var nearbyShopIds = await _shopRepository.GetTopNearbyShops(residentLocation, topN);
+            var nearbyShops = await _shopRepository.Find(shop => nearbyShopIds.Contains(shop.Id));
+            */
+
+            var addresses = await _addressRepository.Find(x => true);
+
+            var sortedAddresses = addresses
+                .Select(address => new
+                {
+                    Address = address,
+                    Distance = Distance(residentLocation, new ResidentLocation() { Longitude = address.Longitude, Latitude = address.Latitude })
+                })
+                .OrderBy(x => x.Distance)
+                .Take(topN)
+                .Select(x => x.Address.AddressBelongsToId)
+                .ToList();
+
+
+            var nearbyShops = await _shopRepository.Find(x => sortedAddresses.Contains(x.Id));
+
+            return new Response<IEnumerable<Shop>>(nearbyShops);
+        }
+
+        private static double Distance(ResidentLocation residentLocation, ResidentLocation shopLocation)
+        {
+            var earthRadius = 6371e3; // Radius of Earth in meters
+            var residentLatitude = residentLocation.Latitude * Math.PI / 180;
+            var shopLatitude = shopLocation.Latitude * Math.PI / 180;
+            var deltaLatitude = (shopLocation.Latitude - residentLocation.Latitude) * Math.PI / 180;
+            var deltaLongitude = (shopLocation.Longitude - residentLocation.Longitude) * Math.PI / 180;
+
+            var a = Math.Sin(deltaLatitude / 2) * Math.Sin(deltaLatitude / 2) +
+                    Math.Cos(residentLatitude) * Math.Cos(shopLatitude) *
+                    Math.Sin(deltaLongitude / 2) * Math.Sin(deltaLongitude / 2);
+            var c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+
+            var distanceInMeters =  earthRadius * c; // Distance in meters
+            return distanceInMeters;
         }
     }
 }

@@ -1,18 +1,13 @@
 ﻿using BackendServices;
-using BackendServices.Actions;
-using BackendServices.Actions.Admin;
-using BackendServices.Actions.Admin.RealTimeServices;
 using BackendServices.Actions.Inventory;
+using BackendServices.Actions.PrePurchase;
+using BackendServices.Actions.PrePurchase.AdminPortal;
 using BackendServices.JWT;
-using BackendServices.Validators;
-using BackendServices.Validators.ValidationData;
-using Infrastructure.Actions;
-using Infrastructure.Actions.Admin;
-using Infrastructure.Actions.Admin.RealTime;
+using Infrastructure.Actions.PrePurchase;
+using Infrastructure.Actions.PrePurchase.Admin;
 using Infrastructure.Helpers;
 using Infrastructure.JWT;
 using Infrastructure.Repositories;
-using Infrastructure.Validators;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -20,17 +15,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using PrePurchase.Models;
-using System;
 using System.IO;
 using System.Security.Claims;
 using System.Text.Json;
 using System.Threading.Tasks;
-using BackendServices.Actions.PrePurchase.AdminPortal;
-using Infrastructure.Actions.PrePurchase.Admin;
-using ILoginActions = BackendServices.Actions.Admin.ILoginActions;
-using Infrastructure.Actions.PrePurchase;
-using BackendServices.Actions.PrePurchase;
 
 namespace Infrastructure
 {
@@ -43,11 +31,9 @@ namespace Infrastructure
             services.AddAuth();
             services.AddPasswordManager();
             services.AddActions();
-            services.AddSingleton<IEmployeeIdGenerator, EmployeeIdGenerator>();
             services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
             services.AddSingleton<ITimeZoneProvider, TimeZoneProvider>();
             services.AddSingleton<ICommon, Common>();
-            services.AddValidators();
 
             return services;
         }
@@ -73,19 +59,11 @@ namespace Infrastructure
             services.AddSingleton(typeof(IRepository<>), typeof(BaseRepository<>));
             services.AddSingleton<IQueryBuilderProvider, QueryBuilderProvider>();
             services.AddTransient(typeof(IQueryBuilder<>), typeof(BaseQueryBuilder<>));
-            services.AddSingleton<ITimeSummaryRepository, TimeSummaryRepository>();
             services.AddTransient(typeof(IUpdateBuilderProvider), typeof(UpdateBuilderProvider));
             services.AddTransient(typeof(IUpdateBuilder<>), typeof(BaseUpdateBuilder<>));
             return services;
         }
 
-        public static async Task<string> CreateBatchCode(this IRepository<History> histories,
-            IQueryBuilderProvider builder)
-        {
-            string _batchCode = $"B-{DateTime.UtcNow:yyMMdd}-" + await Nanoid.Nanoid.GenerateAsync(size: 10);
-
-            return _batchCode;
-        }
 
         private static IServiceCollection AddAuth(this IServiceCollection services)
         {
@@ -123,23 +101,9 @@ namespace Infrastructure
 
         private static IServiceCollection AddActions(this IServiceCollection services)
         {
-            services.AddScoped<IEmployeeActions, EmployeeActions>();
-            services.AddScoped<IAllActions, AllActions>();
-            services.AddScoped<IUniversalActions, UniversalActions>();
-            services.AddScoped<ISimunyeActions, SimunyeActions>();
-            services.AddScoped<IPayment, PeachPayment>();
 
-            services.AddScoped<ILoginActions, LoginActions>();
-            services.AddScoped<IEmployeesActions, EmployeesActions>();
-            services.AddScoped<ICompanyActions, CompanyActions>();
             services.AddScoped<IUserActions, UserActions>();
-            services.AddScoped<IDepartmentsActions, DepartmentsActions>();
-            services.AddScoped<ILoansActions, LoansActions>();
-            services.AddScoped<IPayrollActions, PayrollActions>();
-            services.AddScoped<IPositionsNewActions, PositionsNewActions>();
-            services.AddScoped<IDepartmentsNewActions, DepartmentsnewActions>();
-            services.AddScoped<IRealTimeDashBoardUpdate, RealTimeDashBoardUpdate>();
-            services.AddScoped<IRealTimePayroll, RealTimePayroll>();
+
             services.AddScoped<ICategoriesActions, CategoriesActions>();
             services.AddScoped<IOrderItemsActions, OrderItemsActions>();
             services.AddScoped<IProductsActions, ProductsActions>();
@@ -157,17 +121,7 @@ namespace Infrastructure
             return services;
         }
 
-        private static IServiceCollection AddValidators(this IServiceCollection services)
-        {
-            services
-                .AddSingleton<IValidator<CompanyEmployeeValidationData, CompanyEmployeeValidationResult>,
-                    CompanyEmployeeValidator>();
-            services.AddSingleton<IValidator<DayOfWeekValidationData, DayOfWeekValidationResult>, DayOfWeekValidator>();
-            services.AddSingleton<IValidator<DistanceValidationData, DistanceValidationResult>, DistanceValidator>();
-            services.AddSingleton<IValidator<QrCodeValidationData, QrCodeValidationResult>, QrCodeValidator>();
-            services.AddSingleton<IValidator<ShiftValidationData, ShiftValidationResult>, ShiftValidator>();
-            return services;
-        }
+
 
         private static IServiceCollection AddEncryptionManger(this IServiceCollection services)
         {

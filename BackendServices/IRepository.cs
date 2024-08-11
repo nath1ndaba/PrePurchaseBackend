@@ -1,4 +1,8 @@
-﻿using System;
+﻿using BackendServices.Models;
+using MongoDB.Bson;
+using PrePurchase.Models;
+using SharpCompress.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -23,6 +27,9 @@ namespace BackendServices
         Task<long> DeleteOne(Expression<Func<T, bool>> predicate);
         Task<long> DeleteOne(IQueryBuilder<T> queryBuilder);
         IQueryable<T> AsQueryable();
+
+        /*        Task<IEnumerable<ObjectId>> GetTopNearbyShops(ResidentLocation residentLocation, int topN);
+        */
 
     }
 }

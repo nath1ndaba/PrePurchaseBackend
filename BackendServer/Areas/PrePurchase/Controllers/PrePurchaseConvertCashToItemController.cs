@@ -50,6 +50,16 @@ namespace BackendServer.V1.Controllers
             return response;
         }
 
+
+        [HttpGet("GetTopNearbyShops")]
+        [ProducesResponseType(typeof(Response<CashToItemDto>), 200)]
+        public async Task<Response> GetTopNearbyShops([FromQuery] ResidentLocation residentLocation, [FromQuery] int topN)
+        {
+            Response response =
+                await _cashToItemsActions.GetTopNearbyShops(residentLocation, topN);
+            return response;
+        }
+
         [HttpGet("getRecharges/{userId}")]
         [ProducesResponseType(typeof(Response<List<CashToItemDto>>), 200)]
         public async Task<Response> GetCashToItems([FromRoute] string userId)

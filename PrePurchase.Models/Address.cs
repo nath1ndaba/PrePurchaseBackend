@@ -8,7 +8,7 @@ namespace PrePurchase.Models
 {
     [BsonNoId]
     [BsonIgnoreExtraElements]
-    public record Address
+    public record AddressDto
     {
         [JsonConverter(typeof(ObjectIdConverter))]
         [BsonId]
@@ -22,8 +22,7 @@ namespace PrePurchase.Models
         public string Province { get; set; }
         public string Country { get; set; }
         public string PostalCode { get; set; }
-        public List<Location> ListOfSitesPerCompany { get; set; }
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
     }
-
-
 }

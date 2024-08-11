@@ -1,4 +1,5 @@
 ﻿using BackendServices;
+using BackendServices.Models;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using PrePurchase.Models;
@@ -6,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
@@ -51,6 +51,8 @@ namespace Infrastructure.Repositories
         }
         public async Task<Entity> FindOne(Expression<Func<Entity, bool>> predicate)
         {
+
+
             Entity? result = await _collection.Find(predicate).FirstOrDefaultAsync();
             return result;
         }
@@ -112,7 +114,7 @@ namespace Infrastructure.Repositories
             var result = await _collection.DeleteOneAsync(predicate);
             return result.DeletedCount;
         }
-        
+
         public async Task<long> DeleteOne(IQueryBuilder<Entity> queryBuilder)
         {
             BaseQueryBuilder<Entity> baseQueryBuilder = (BaseQueryBuilder<Entity>)queryBuilder;
@@ -124,6 +126,40 @@ namespace Infrastructure.Repositories
         {
             return _collection.AsQueryable();
         }
+
+
+
+      /*  public async Task<IEnumerable<ObjectId>> GetTopNearbyShops(ResidentLocation residentLocation, int topN)
+        {
+            // Create 2dsphere index if not already created
+
+
+            var nearbyShops = await _collection.Aggregate()
+                .AppendStage<Address>(new BsonDocument
+                {
+            { "$geoNear", new BsonDocument
+                {
+                    { "near", new BsonDocument
+                        {
+                            { "type", "Point" },
+                            { "coordinates", new BsonArray { residentLocation.Longitude, residentLocation.Latitude } }
+                        }
+                    },
+                    { "distanceField", "distance" },
+                    { "spherical", true },
+                }
+            }
+                })
+                //.SortBy(a => a["distance"])
+                .Limit(topN)
+                .ToListAsync();
+
+            // Extract ShopIds from the results
+            var nearbyShopIds = nearbyShops.Select(a => a.AddressBelongsToId).Distinct();
+
+            return nearbyShopIds;
+        }
+*/
 
     }
 }

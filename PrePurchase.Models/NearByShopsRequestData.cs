@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Text.Json.Serialization;
 
 namespace PrePurchase.Models
 {
-    public record ClockInAndOutData
+    public record NearByShopsRequestData
     {
-        public Location EmployeePosition { get; set; }
+        public ResidentLocation ResidentPosition { get; set; }
 
         /// <summary>
         /// The company QrCode will be encoded with CompanyId

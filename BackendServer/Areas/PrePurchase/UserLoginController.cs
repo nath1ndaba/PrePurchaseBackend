@@ -1,5 +1,4 @@
 ﻿using BackendServices;
-using BackendServices.Actions.Admin;
 using BackendServices.Actions.PrePurchase;
 using BackendServices.JWT;
 using BackendServices.Models;
@@ -23,7 +22,7 @@ namespace BackendServer.V1.Controllers
     {
         [HttpPost]
         [AllowAnonymous]
-        [ProducesResponseType(typeof(Response<SucessfulLogin>), 200)]
+        //[ProducesResponseType(typeof(Response<SucessfulLogin>), 200)]
         public async Task<Response> Login([FromBody] LoginModel model)
         {
             UserLoginResponse response = await _userLoginActions.UserLogin(model.Sanitize());
