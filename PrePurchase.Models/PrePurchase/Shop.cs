@@ -12,8 +12,9 @@ public class Shop
 {
     [JsonConverter(typeof(ObjectIdConverter))]
     [BsonId]
+    [BsonRequired]
     public ObjectId Id { get; set; } = ObjectId.GenerateNewId();
-    public DateTime CreatedDate { get; set; }
+    public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
     [JsonConverter(typeof(ObjectIdConverter))]
     public ObjectId? CreatedBy { get; set; }
     public DateTime UpdatedDate { get; set; }

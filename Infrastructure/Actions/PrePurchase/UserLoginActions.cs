@@ -90,7 +90,7 @@ namespace Infrastructure.Actions.PrePurchase
             userInfo.DtoFromUser(user);
             userInfo.Address = await _address.FindOne(x => x.AddressBelongsToId == user.Id) ?? new Address();
 
-            var productsResults = new List<ProductDto>();
+            //var productsResults = new List<ProductDto>();
             var userAccountResults = new UserAccountDto();
             var loginResponse = new UserLoginResponse();
 
@@ -109,11 +109,12 @@ namespace Infrastructure.Actions.PrePurchase
             else
             {
                 var products = await _product.Find(x => user.ShopId.Contains(x.ShopId));
+                loginResponse.Products = new List<ProductDto>();
                 foreach (var product in products)
                 {
                     var dto = new ProductDto();
                     dto.DtoFromProduct(product);
-                    productsResults.Add(dto);//
+                    loginResponse.Products.Add(dto);
                 }
                 // Fetch all shops related to the user in a single query
                 var shops = await _shop.Find(x => user.ShopId.Contains(x.Id));
@@ -137,7 +138,7 @@ namespace Infrastructure.Actions.PrePurchase
                             shopDto.Address = shopAddress;
                         }
 
-                        loginResponse.Shop.Add(shopDto);//
+                        loginResponse.Shop.Add(shopDto);
                     }
                 }
                 else

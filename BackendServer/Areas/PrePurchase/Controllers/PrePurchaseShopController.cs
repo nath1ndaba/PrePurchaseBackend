@@ -6,6 +6,7 @@ using BackendServices.Models.PrePurchase;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PrePurchase.Models;
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -32,7 +33,7 @@ namespace BackendServer.V1.Controllers
         }
 
         [HttpGet("getShops")]
-        [ProducesResponseType(typeof(Response<JwtTokenModel>), 200)]
+        //[ProducesResponseType(typeof(Response<List<ShopDto>>), 200)]
         public async Task<Response> GetShops()
         {
             Response response =

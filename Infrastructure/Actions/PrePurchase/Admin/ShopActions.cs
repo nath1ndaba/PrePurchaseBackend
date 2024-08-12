@@ -139,8 +139,15 @@ public class ShopActions : IShopActions
         _logger.LogInformation("Retrieving all shops");
 
         var shops = await _shop.Find(x => x.DeletedIndicator == false) ?? new List<Shop>();
+        List<ShopDto> shopsDto = new List<ShopDto>();
+        foreach (var shop in shops)
+        {
+            var shopDto = new ShopDto();
+            shopDto.DtoFromShop(shop);
+            shopsDto.Add(shopDto);
+        }
 
-        return new Response<IEnumerable<Shop>>(shops, HttpStatusCode.Found);
+        return new Response<IEnumerable<ShopDto>>(shopsDto, HttpStatusCode.Found);
     }
 
     public async Task<Response> ArchiveShop(string shopId, string updatedBy)

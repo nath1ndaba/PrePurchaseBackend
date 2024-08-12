@@ -66,7 +66,7 @@ namespace BackendServer.V1.Controllers
         }
 
         [HttpGet("{shopId}")]
-        [ProducesResponseType(typeof(Response<Product>), 200)]
+        [ProducesResponseType(typeof(Response<ProductDto>), 200)]
         public async Task<Response> GetProducts([FromRoute] string shopId)
         {
             RequireProductId(shopId);
@@ -83,7 +83,7 @@ namespace BackendServer.V1.Controllers
             return await actions.GetProductsForCategory(role, categoryId, shopId);
         }
 
-        [HttpGet("{id}")]
+     /*   [HttpGet("{id}")]
         [ProducesResponseType(typeof(Response<List<Product>>), 200)]
         public async Task<Response> GetProduct([FromRoute] string id, [FromQuery] string shopId = null)
         {
@@ -91,7 +91,7 @@ namespace BackendServer.V1.Controllers
             string role = GetRole();
 
             return await actions.GetProduct(id, role, shopId);
-        }
+        }*/
 
         [HttpDelete("{id}")]
         [ProducesResponseType(typeof(Response<List<Product>>), 200)]

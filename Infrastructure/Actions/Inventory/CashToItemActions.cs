@@ -143,6 +143,7 @@ namespace Infrastructure.Repositories
                 model.PreviousPriceToPurchaseItem = itemPrice;
                 model.AmountSpentOnItem = costUserWishesToPurchase;
                 model.ItemImage = item.ItemImage;
+                model.ItemName = item.Name;
 
                 CashToItem cashToItem = new();
                 cashToItem.DtoToCashToItem(model);
@@ -162,12 +163,20 @@ namespace Infrastructure.Repositories
 
                 if (userAccount.ItemsBalances == null || userAccount.ItemsBalances.Count == 0)
                 {
-                    userAccount.ItemsBalances = new List<ItemBalance>();
-                    userAccount.ItemsBalances.Add(itemBalance);
+                    userAccount.ItemsBalances = [itemBalance];
                 }
                 else
                 {
-                    userAccount.ItemsBalances.Add(itemBalance);
+                    var indexIfExists = userAccount.ItemsBalances.FindIndex(x => x.ItemId == itemBalance.ItemId);
+                    if (indexIfExists != -1)
+                    {
+
+                        userAccount.ItemsBalances[indexIfExists].Balance += itemBalance.Balance;
+                    }
+                    else
+                    {
+                        userAccount.ItemsBalances.Add(itemBalance);
+                    }
                 }
                 await _userAccountRepository.Update(userAccount.Id.ToString(), userAccount);
 
@@ -217,8 +226,15 @@ namespace Infrastructure.Repositories
 
 
             var nearbyShops = await _shopRepository.Find(x => sortedAddresses.Contains(x.Id));
+            List<ShopDto> shops = new List<ShopDto>();
+            foreach (var shop in nearbyShops)
+            {
+                ShopDto dto = new ShopDto();
+                dto.DtoFromShop(shop);
+                shops.Add(dto);
+            }
 
-            return new Response<IEnumerable<Shop>>(nearbyShops);
+            return new Response<IEnumerable<ShopDto>>(shops, HttpStatusCode.OK);
         }
 
         private static double Distance(ResidentLocation residentLocation, ResidentLocation shopLocation)
@@ -234,7 +250,7 @@ namespace Infrastructure.Repositories
                     Math.Sin(deltaLongitude / 2) * Math.Sin(deltaLongitude / 2);
             var c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
 
-            var distanceInMeters =  earthRadius * c; // Distance in meters
+            var distanceInMeters = earthRadius * c; // Distance in meters
             return distanceInMeters;
         }
     }

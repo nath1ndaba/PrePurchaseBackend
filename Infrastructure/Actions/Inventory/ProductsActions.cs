@@ -36,7 +36,15 @@ namespace Infrastructure.Repositories
                 IEnumerable<Product> products = await _productRepository.Find(u => u.ShopId == shop.Id);
                 if (products == null || !products.Any())
                     throw new HttpResponseException($"No products found for {shop.Name}");
-                return new Response<IEnumerable<Product>>(products, HttpStatusCode.OK);
+                List<ProductDto> dtos = new List<ProductDto>();
+                foreach (var product in products)
+                {
+                    ProductDto productDto = new ProductDto();
+                    productDto.DtoFromProduct(product);
+                    dtos.Add(productDto);
+                }
+
+                return new Response<IEnumerable<ProductDto>>(dtos, HttpStatusCode.OK);
             }
             catch (Exception ex)
             {

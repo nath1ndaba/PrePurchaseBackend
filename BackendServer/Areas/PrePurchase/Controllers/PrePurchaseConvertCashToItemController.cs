@@ -52,7 +52,7 @@ namespace BackendServer.V1.Controllers
 
 
         [HttpGet("GetTopNearbyShops")]
-        [ProducesResponseType(typeof(Response<List<ShopDto>>), 200)]
+        //[ProducesResponseType(typeof(Response<List<ShopDto>>), 200)]
         public async Task<Response> GetTopNearbyShops([FromQuery] ResidentLocation residentLocation, [FromQuery] int topN)
         {
             Response response =
