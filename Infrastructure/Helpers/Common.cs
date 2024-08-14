@@ -12,9 +12,22 @@ namespace Infrastructure.Helpers
 {
     public class Common : ICommon
     {
-        public async Task<T> ValidateOwner<T>(string role, string companyId) where T : class
+        public async Task<T> ValidateOwner<T>(string role, string id) where T : class
         {
-            Response response = await GetShop<T>(role, companyId);
+            Response response = await GetShop<T>(role, id);
+            if (response is not Response<T> entityResponse)
+                throw new HttpResponseException(response);
+
+            T entity = entityResponse.Data!;
+            if (entity is Shop shop && shop.LicenseExpiryDate < DateTime.UtcNow)
+            {
+                throw new HttpResponseException(new Response(HttpStatusCode.NotFound, error: "Services Discontinued😒"));
+            }
+            return entity;
+        }
+        public async Task<T> ValidateOwner<T>(string id) where T : class
+        {
+            Response response = await GetShop<T>(id);
             if (response is not Response<T> entityResponse)
                 throw new HttpResponseException(response);
 
@@ -26,7 +39,7 @@ namespace Infrastructure.Helpers
             return entity;
         }
 
-        private async Task<Response> GetShop<T>(string role, string? id = null) where T : class
+        private async Task<Response> GetShop<T>(string id, string? role = null) where T : class
         {
             async Task<T> Data()
             {
@@ -61,6 +74,9 @@ namespace Infrastructure.Helpers
                 case AuthRoles.Owner:
                     response = new Response<T>() { Data = await Data() };
                     break;
+                case null:
+                    response = new Response<T>() { Data = await Data() };
+                    break; //TODO: is this not authorised?
                 default:
                     response = new Response(HttpStatusCode.Unauthorized, error: "You don't have access to this resource!");
                     break;

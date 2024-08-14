@@ -23,7 +23,6 @@ namespace BackendServer.V1.Controllers
     [Consumes("application/json")]
     [Area("Inventory")]
     [Route("[area]/[controller]")]
-    [Authorize(Policy = AuthPolicies.Shop)]
     [ProducesResponseType(typeof(Response), 400)]
     [ProducesResponseType(typeof(Response), 500)]
     [ApiController]
@@ -39,11 +38,11 @@ namespace BackendServer.V1.Controllers
         [ProducesResponseType(typeof(Response<Product>), 200)]
         public async Task<Response> AddProduct([FromBody] ProductDto model, [FromQuery] string shopId = null)
         {
-            RequireProductId(shopId);
+            
             string createdBy = User.FindFirstValue(ClaimTypes.Name);
             string updatedBy = createdBy;
-            string role = GetRole();
-            Response response = await actions.AddProduct(createdBy, updatedBy, model, role, shopId);
+
+            Response response = await actions.AddProduct(createdBy, updatedBy, model, shopId);
 
             if (response is not Response<Product> correspondingResponse) return response;
 
@@ -54,11 +53,11 @@ namespace BackendServer.V1.Controllers
         [ProducesResponseType(typeof(Response<Product>), 200)]
         public async Task<Response> UpdateProduct([FromBody] Product model, [FromQuery] string shopId = null)
         {
-            RequireProductId(shopId);
+            
             string updatedBy = User.FindFirstValue(ClaimTypes.Name);
-            string role = GetRole();
 
-            Response response = await actions.UpdateProduct(updatedBy, model, role, shopId);
+
+            Response response = await actions.UpdateProduct(updatedBy, model, shopId);
 
             if (response is not Response<Product> correspondingResponse) return response;
 
@@ -69,39 +68,39 @@ namespace BackendServer.V1.Controllers
         [ProducesResponseType(typeof(Response<ProductDto>), 200)]
         public async Task<Response> GetProducts([FromRoute] string shopId)
         {
-            RequireProductId(shopId);
-            string role = GetRole();
-            return await actions.GetProducts(role, shopId);
+            
+
+            return await actions.GetProducts(shopId);
         }
 
         [HttpGet("productsforcategory")]
         [ProducesResponseType(typeof(Response<Product>), 200)]
         public async Task<Response> GetProductsForCategory([FromQuery] string categoryId, [FromQuery] string shopId)
         {
-            RequireProductId(shopId);
-            string role = GetRole();
-            return await actions.GetProductsForCategory(role, categoryId, shopId);
+            
+
+            return await actions.GetProductsForCategory(categoryId, shopId);
         }
 
-     /*   [HttpGet("{id}")]
-        [ProducesResponseType(typeof(Response<List<Product>>), 200)]
-        public async Task<Response> GetProduct([FromRoute] string id, [FromQuery] string shopId = null)
-        {
-            RequireProductId(shopId);
-            string role = GetRole();
+        /*   [HttpGet("{id}")]
+           [ProducesResponseType(typeof(Response<List<Product>>), 200)]
+           public async Task<Response> GetProduct([FromRoute] string id, [FromQuery] string shopId = null)
+           {
+               
+               
 
-            return await actions.GetProduct(id, role, shopId);
-        }*/
+               return await actions.GetProduct(id,  shopId);
+           }*/
 
         [HttpDelete("{id}")]
         [ProducesResponseType(typeof(Response<List<Product>>), 200)]
         public async Task<Response> SoftDeleteProduct([FromRoute] string id, [FromQuery] string shopId = null)
         {
-            RequireProductId(shopId);
+            
             string updatedBy = User.FindFirstValue(ClaimTypes.Name);
-            string role = GetRole();
 
-            return await actions.SoftDeleteProduct(updatedBy, id, role, shopId);
+
+            return await actions.SoftDeleteProduct(updatedBy, id, shopId);
         }
 
         private string GetRole()

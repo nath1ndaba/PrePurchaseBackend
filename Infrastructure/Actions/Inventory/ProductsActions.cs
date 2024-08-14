@@ -28,11 +28,11 @@ namespace Infrastructure.Repositories
             _common = common ?? throw new ArgumentNullException(nameof(common));
         }
 
-        public async Task<Response> GetProducts(string role, string shopId)
+        public async Task<Response> GetProducts(string shopId)
         {
             try
             {
-                Shop shop = await _common.ValidateOwner<Shop>(role, shopId);
+                Shop shop = await _common.ValidateOwner<Shop>(shopId);
                 IEnumerable<Product> products = await _productRepository.Find(u => u.ShopId == shop.Id);
                 if (products == null || !products.Any())
                     throw new HttpResponseException($"No products found for {shop.Name}");
@@ -51,11 +51,11 @@ namespace Infrastructure.Repositories
                 throw new HttpResponseException(ex.Message);
             }
         }
-        public async Task<Response> GetProductsForCategory(string role, string categoryId, string shopId)
+        public async Task<Response> GetProductsForCategory(string categoryId, string shopId)
         {
             try
             {
-                Shop shop = await _common.ValidateOwner<Shop>(role, shopId);
+                Shop shop = await _common.ValidateOwner<Shop>(shopId);
                 IEnumerable<Product> products = await _productRepository.Find(x => x.ShopId == shop.Id && x.CategoryID == ObjectId.Parse(categoryId));
                 if (products == null || !products.Any())
                     throw new HttpResponseException($"No products found for {shop.Name}");
@@ -67,11 +67,11 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public async Task<Response> AddProduct(string createdBy, string updatedBy, ProductDto model, string role, string? shopId = null)
+        public async Task<Response> AddProduct(string createdBy, string updatedBy, ProductDto model, string? shopId = null)
         {
             try
             {
-                Shop shop = await _common.ValidateOwner<Shop>(role, shopId);
+                Shop shop = await _common.ValidateOwner<Shop>(shopId);
                 Product existingProducts = await _productRepository.FindOne(u => u.Name == model.Name && u.ShopId == shop.Id);
                 if (existingProducts != null)
                     throw new HttpResponseException($"Products with productname '{model.Name}' already exists!");
@@ -96,11 +96,11 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public async Task<Response> UpdateProduct(string updatedBy, Product product, string role, string? shopId = null)
+        public async Task<Response> UpdateProduct(string updatedBy, Product product, string? shopId = null)
         {
             try
             {
-                Shop shop = await _common.ValidateOwner<Shop>(role, shopId);
+                Shop shop = await _common.ValidateOwner<Shop>(shopId);
                 Product existingProduct = await _productRepository.FindById(product.Id.ToString());
                 if (existingProduct == null || existingProduct.ShopId != shop.Id)
                     throw new HttpResponseException("Products not found");
@@ -130,11 +130,11 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public async Task<Response> GetProduct(string id, string role, string? shopId = null)
+        public async Task<Response> GetProduct(string id, string? shopId = null)
         {
             try
             {
-                Shop shop = await _common.ValidateOwner<Shop>(role, shopId);
+                Shop shop = await _common.ValidateOwner<Shop>(shopId);
                 Product product = await _productRepository.FindById(id);
                 if (product == null || product.ShopId != shop.Id)
                     throw new HttpResponseException("Products not found");
@@ -146,11 +146,11 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public async Task<Response> SoftDeleteProduct(string updatedBy, string id, string role, string? shopId = null)
+        public async Task<Response> SoftDeleteProduct(string updatedBy, string id, string? shopId = null)
         {
             try
             {
-                Shop shop = await _common.ValidateOwner<Shop>(role, shopId);
+                Shop shop = await _common.ValidateOwner<Shop>(shopId);
                 Product product = await _productRepository.FindById(id);
                 if (product == null || product.ShopId != shop.Id)
                     throw new HttpResponseException("Products not found");
