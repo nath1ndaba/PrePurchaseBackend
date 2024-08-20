@@ -12,7 +12,7 @@ public class FirestoreService
 
     public FirestoreService()
     {
-        _firestoreDb = FirestoreDb.Create("your-project-id");
+        _firestoreDb = FirestoreDb.Create("pre-purchase");
     }
 
     public async Task<ShopDto> GetShopAsync(string shopId)
