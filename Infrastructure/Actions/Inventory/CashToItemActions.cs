@@ -152,7 +152,7 @@ namespace Infrastructure.Repositories
 
                 /// Now let us do somereduction to the cash that is equivalent to the price of items bought
                 userAccount.UpdatedDate = DateTime.UtcNow;
-                userAccount.UpdatedBy = ObjectId.Parse(createdBy);
+                userAccount.UpdatedBy = ObjectId.Parse(userId);
                 userAccount.AmountBalance -= costUserWishesToPurchase;
 
                 ItemBalance itemBalance = new();
