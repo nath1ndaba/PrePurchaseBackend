@@ -1,5 +1,4 @@
 using BackendServer.DotnetEnv;
-using BackendServer.Hubs;
 using Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

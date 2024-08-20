@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using global::PrePurchase.Models.Converters;
-using MongoDB.Bson;
+﻿using global::PrePurchase.Models.Converters;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
-using PrePurchase.Models;
 using PrePurchase.Models.PrePurchase;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace BackendServices.Models.PrePurchase;
 public class UserDto
@@ -16,12 +14,12 @@ public class UserDto
     [BsonRequired]
     public string Id { get; set; }
 
-    public DateTime CreatedDate { get; set; } 
+    public DateTime CreatedDate { get; set; }
 
     [JsonConverter(typeof(ObjectIdConverter))]
     public string CreatedBy { get; set; }
 
-    public DateTime UpdatedDate { get; set; } 
+    public DateTime UpdatedDate { get; set; }
 
     [JsonConverter(typeof(ObjectIdConverter))]
     public string UpdatedBy { get; set; }
@@ -53,5 +51,6 @@ public class UserDto
     public List<string> ShopId { get; set; }
 
     public Address Address { get; set; }
+    public string NotificationToken { get; set; } //for firestore
 
 }

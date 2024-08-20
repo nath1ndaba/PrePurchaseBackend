@@ -19,4 +19,5 @@ public class ShopDto
     public string QRCode { get; set; }
     public DateTime Timestamp { get; set; } = DateTime.UtcNow;
     public DateTime? LicenseExpiryDate { get; set; }
+    public string NotificationToken { get; set; }  // Add this property
 }

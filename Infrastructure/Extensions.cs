@@ -5,6 +5,7 @@ using BackendServices.Actions.PrePurchase.AdminPortal;
 using BackendServices.JWT;
 using Infrastructure.Actions.PrePurchase;
 using Infrastructure.Actions.PrePurchase.Admin;
+using Infrastructure.Firebase;
 using Infrastructure.Helpers;
 using Infrastructure.JWT;
 using Infrastructure.Repositories;
@@ -34,6 +35,10 @@ namespace Infrastructure
             services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
             services.AddSingleton<ITimeZoneProvider, TimeZoneProvider>();
             services.AddSingleton<ICommon, Common>();
+
+            services.AddSingleton<OrderProcessingService>();
+            services.AddSingleton<FirestoreService>();
+            services.AddSingleton<NotificationService>();
 
             return services;
         }
